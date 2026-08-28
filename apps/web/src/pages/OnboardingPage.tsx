@@ -8,6 +8,7 @@ import { onboardingSchema, type OnboardingValues } from "@arins/shared";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { api, ApiError } from "@/lib/api";
 
 export default function OnboardingPage() {
@@ -33,7 +34,10 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted/30 px-4">
+    <div className="relative flex min-h-screen items-center justify-center bg-muted/30 px-4">
+      <div className="absolute top-4 right-4">
+        <ThemeToggle />
+      </div>
       <div className="w-full max-w-sm rounded-xl border bg-card p-6 shadow-sm">
         <h1 className="text-xl font-semibold">Vamos criar sua empresa</h1>
         <p className="mt-1 text-sm text-muted-foreground">

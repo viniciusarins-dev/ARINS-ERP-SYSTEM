@@ -3,6 +3,7 @@ import { LayoutDashboard, Package, Users, ShoppingCart, Settings, LogOut } from 
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { useAuth } from "@/lib/auth-context";
 
 const NAV_ITEMS = [
@@ -38,6 +39,7 @@ export function AppNav({ organizationName }: { organizationName: string }) {
             </NavLink>
           ))}
         </nav>
+        <ThemeToggle />
         <Button type="button" variant="ghost" size="sm" onClick={() => signOut()}>
           <LogOut className="size-4" />
           Sair
