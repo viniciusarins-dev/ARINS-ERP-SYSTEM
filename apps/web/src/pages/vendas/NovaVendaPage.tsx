@@ -56,7 +56,7 @@ export default function NovaVendaPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  const { data: productsData } = useQuery({
+  const { data: productsData, isLoading: productsLoading } = useQuery({
     queryKey: ["products", "active-for-sale"],
     queryFn: () => api.get<{ products: SaleProduct[] }>("/api/products?active=true"),
   });
@@ -177,9 +177,15 @@ export default function NovaVendaPage() {
         <CardContent className="flex flex-wrap items-end gap-3">
           <div className="flex min-w-64 flex-1 flex-col gap-2">
             <Label>Produto</Label>
-            <Select value={selectedProductId} onValueChange={setSelectedProductId}>
+            <Select
+              value={selectedProductId}
+              onValueChange={setSelectedProductId}
+              disabled={productsLoading}
+            >
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="Selecione um produto" />
+                <SelectValue
+                  placeholder={productsLoading ? "Carregando produtos..." : "Selecione um produto"}
+                />
               </SelectTrigger>
               <SelectContent>
                 {products.map((product) => (

@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import { FiscalConfigCard } from "./FiscalConfigCard";
@@ -20,7 +21,7 @@ interface Member {
 
 export default function ConfiguracoesPage() {
   const { organization } = useAuth();
-  const { data } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["members"],
     queryFn: () => api.get<{ members: Member[] }>("/api/organizations/members"),
   });
@@ -55,12 +56,19 @@ export default function ConfiguracoesPage() {
           <CardTitle className="text-base">Equipe</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-2">
-          {(data?.members ?? []).map((member) => (
-            <div key={member.id} className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">{member.user_id}</span>
-              <Badge variant="outline">{ROLE_LABELS[member.role] ?? member.role}</Badge>
-            </div>
-          ))}
+          {isLoading ? (
+            <>
+              <Skeleton className="h-5 w-full" />
+              <Skeleton className="h-5 w-2/3" />
+            </>
+          ) : (
+            (data?.members ?? []).map((member) => (
+              <div key={member.id} className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">{member.user_id}</span>
+                <Badge variant="outline">{ROLE_LABELS[member.role] ?? member.role}</Badge>
+              </div>
+            ))
+          )}
           <p className="mt-2 text-xs text-muted-foreground">
             Convite de novos membros ainda nao esta disponivel nesta versao.
           </p>

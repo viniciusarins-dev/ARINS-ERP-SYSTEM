@@ -1,6 +1,7 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Plus, Receipt } from "lucide-react";
+import { Plus, Receipt, ShoppingCart } from "lucide-react";
 import { toast } from "sonner";
 import { formatCurrency, formatDate } from "@arins/shared";
 
@@ -25,8 +26,13 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { TableSkeleton } from "@/components/table-skeleton";
+import { EmptyState } from "@/components/empty-state";
+import { ErrorState } from "@/components/error-state";
 import { api, ApiError } from "@/lib/api";
 import type { Sale } from "@/lib/types";
+
+const COLUMN_COUNT = 6;
 
 interface FiscalDocument {
   id: string;
@@ -46,7 +52,12 @@ const FISCAL_BADGE: Record<FiscalDocument["status"], { label: string; variant: "
 
 export default function VendasPage() {
   const queryClient = useQueryClient();
-  const { data } = useQuery({
+  const {
+    data,
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
     queryKey: ["sales"],
     queryFn: () => api.get<{ sales: Sale[] }>("/api/sales"),
   });
@@ -54,6 +65,7 @@ export default function VendasPage() {
     queryKey: ["fiscal-documents"],
     queryFn: () => api.get<{ documents: FiscalDocument[] }>("/api/fiscal/documents"),
   });
+  const [emittingSaleId, setEmittingSaleId] = useState<string | null>(null);
 
   async function handleCancel(saleId: string) {
     try {
@@ -68,12 +80,15 @@ export default function VendasPage() {
   }
 
   async function handleEmitNfce(saleId: string) {
+    setEmittingSaleId(saleId);
     try {
       await api.post(`/api/fiscal/sales/${saleId}/emit`);
       toast.success("Nota fiscal enviada para autorizacao");
       queryClient.invalidateQueries({ queryKey: ["fiscal-documents"] });
     } catch (err) {
       toast.error(err instanceof ApiError ? err.message : "Erro ao emitir nota fiscal");
+    } finally {
+      setEmittingSaleId(null);
     }
   }
 
@@ -96,100 +111,118 @@ export default function VendasPage() {
       </div>
 
       <div className="rounded-xl border bg-card">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Data</TableHead>
-              <TableHead>Cliente</TableHead>
-              <TableHead className="text-right">Total</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Nota fiscal</TableHead>
-              <TableHead className="w-32 text-right">Acoes</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {sales.length === 0 && (
+        {isError ? (
+          <ErrorState message="Nao foi possivel carregar as vendas." onRetry={() => refetch()} />
+        ) : !isLoading && sales.length === 0 ? (
+          <EmptyState
+            icon={ShoppingCart}
+            title="Nenhuma venda registrada"
+            description="Registre sua primeira venda pra ver o historico aqui."
+            action={
+              <Button asChild size="sm">
+                <Link to="/vendas/nova">
+                  <Plus />
+                  Nova venda
+                </Link>
+              </Button>
+            }
+          />
+        ) : (
+          <Table>
+            <TableHeader>
               <TableRow>
-                <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
-                  Nenhuma venda registrada.
-                </TableCell>
+                <TableHead>Data</TableHead>
+                <TableHead>Cliente</TableHead>
+                <TableHead className="text-right">Total</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Nota fiscal</TableHead>
+                <TableHead className="w-32 text-right">Acoes</TableHead>
               </TableRow>
-            )}
-            {sales.map((sale) => {
-              const document = documentsBySale.get(sale.id);
-              return (
-                <TableRow key={sale.id}>
-                  <TableCell className="text-muted-foreground">{formatDate(sale.created_at)}</TableCell>
-                  <TableCell>{sale.customers?.name ?? "Cliente avulso"}</TableCell>
-                  <TableCell className="text-right">{formatCurrency(sale.total)}</TableCell>
-                  <TableCell>
-                    <Badge variant={sale.status === "completed" ? "success" : "secondary"}>
-                      {sale.status === "completed" ? "Concluida" : "Cancelada"}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    {document ? (
-                      document.danfe_url ? (
-                        <a
-                          href={document.danfe_url}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="underline underline-offset-4"
-                        >
-                          <Badge variant={FISCAL_BADGE[document.status].variant}>
-                            {FISCAL_BADGE[document.status].label}
-                          </Badge>
-                        </a>
-                      ) : (
-                        <Badge variant={FISCAL_BADGE[document.status].variant}>
-                          {FISCAL_BADGE[document.status].label}
+            </TableHeader>
+            <TableBody>
+              {isLoading ? (
+                <TableSkeleton columns={COLUMN_COUNT} />
+              ) : (
+                sales.map((sale) => {
+                  const document = documentsBySale.get(sale.id);
+                  return (
+                    <TableRow key={sale.id}>
+                      <TableCell className="text-muted-foreground">
+                        {formatDate(sale.created_at)}
+                      </TableCell>
+                      <TableCell>{sale.customers?.name ?? "Cliente avulso"}</TableCell>
+                      <TableCell className="text-right">{formatCurrency(sale.total)}</TableCell>
+                      <TableCell>
+                        <Badge variant={sale.status === "completed" ? "success" : "secondary"}>
+                          {sale.status === "completed" ? "Concluida" : "Cancelada"}
                         </Badge>
-                      )
-                    ) : sale.status === "completed" ? (
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleEmitNfce(sale.id)}
-                      >
-                        <Receipt className="size-4" />
-                        Emitir NFC-e
-                      </Button>
-                    ) : (
-                      <span className="text-muted-foreground">-</span>
-                    )}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {sale.status === "completed" && (
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button variant="ghost" size="sm">
-                            Cancelar
+                      </TableCell>
+                      <TableCell>
+                        {document ? (
+                          document.danfe_url ? (
+                            <a
+                              href={document.danfe_url}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="underline underline-offset-4"
+                            >
+                              <Badge variant={FISCAL_BADGE[document.status].variant}>
+                                {FISCAL_BADGE[document.status].label}
+                              </Badge>
+                            </a>
+                          ) : (
+                            <Badge variant={FISCAL_BADGE[document.status].variant}>
+                              {FISCAL_BADGE[document.status].label}
+                            </Badge>
+                          )
+                        ) : sale.status === "completed" ? (
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            disabled={emittingSaleId === sale.id}
+                            onClick={() => handleEmitNfce(sale.id)}
+                          >
+                            <Receipt className="size-4" />
+                            {emittingSaleId === sale.id ? "Emitindo..." : "Emitir NFC-e"}
                           </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>Cancelar venda?</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              O estoque dos itens sera estornado automaticamente. Essa acao nao
-                              pode ser desfeita.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Voltar</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => handleCancel(sale.id)}>
-                              Confirmar cancelamento
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    )}
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
+                        ) : (
+                          <span className="text-muted-foreground">-</span>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {sale.status === "completed" && (
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button variant="ghost" size="sm">
+                                Cancelar
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Cancelar venda?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  O estoque dos itens sera estornado automaticamente. Essa acao
+                                  nao pode ser desfeita.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Voltar</AlertDialogCancel>
+                                <AlertDialogAction onClick={() => handleCancel(sale.id)}>
+                                  Confirmar cancelamento
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
+              )}
+            </TableBody>
+          </Table>
+        )}
       </div>
     </div>
   );
