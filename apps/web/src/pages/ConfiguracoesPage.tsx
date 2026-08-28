@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { api } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
+import { FiscalConfigCard } from "./FiscalConfigCard";
 
 const ROLE_LABELS: Record<string, string> = {
   owner: "Proprietario",
@@ -46,6 +47,8 @@ export default function ConfiguracoesPage() {
           </p>
         </CardContent>
       </Card>
+
+      <FiscalConfigCard />
 
       <Card>
         <CardHeader>

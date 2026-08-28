@@ -22,3 +22,21 @@ export function createAnonClient(): SupabaseClient<Database> {
     auth: { persistSession: false, autoRefreshToken: false },
   });
 }
+
+/**
+ * Bypasses RLS. Reserved for the fiscal webhook: Focus NFe calls that route
+ * directly with no Supabase session to scope a client to, so the route
+ * authenticates the call itself (shared secret) and then needs to write
+ * fiscal_documents on behalf of whichever organization the webhook payload
+ * names. Never use this for anything a browser request could instead do
+ * through createUserClient — that would defeat the RLS isolation between
+ * tenants that the rest of the API relies on.
+ */
+export function createServiceClient(): SupabaseClient<Database> {
+  if (!env.supabaseServiceRoleKey) {
+    throw new Error("SUPABASE_SERVICE_ROLE_KEY is not configured");
+  }
+  return createClient<Database>(env.supabaseUrl, env.supabaseServiceRoleKey, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+}

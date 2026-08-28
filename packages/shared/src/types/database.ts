@@ -5,6 +5,11 @@
 export type MembershipRole = "owner" | "admin" | "staff";
 export type StockMovementType = "entrada" | "saida" | "ajuste";
 export type SaleStatus = "completed" | "cancelled";
+export type RegimeTributario = "simples_nacional" | "lucro_presumido" | "lucro_real";
+export type FiscalEnvironment = "homologacao" | "producao";
+export type FiscalProviderStatus = "pending" | "active" | "error";
+export type FiscalDocumentType = "nfce" | "nfe";
+export type FiscalDocumentStatus = "pending" | "processing" | "authorized" | "rejected" | "cancelled";
 
 export interface Database {
   public: {
@@ -310,6 +315,110 @@ export interface Database {
             columns: ["product_id"];
             isOneToOne: false;
             referencedRelation: "products";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      fiscal_configs: {
+        Row: {
+          id: string;
+          organization_id: string;
+          cnpj: string;
+          regime_tributario: RegimeTributario;
+          inscricao_estadual: string | null;
+          environment: FiscalEnvironment;
+          provider: string;
+          provider_status: FiscalProviderStatus;
+          provider_error: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          cnpj: string;
+          regime_tributario: RegimeTributario;
+          inscricao_estadual?: string | null;
+          environment?: FiscalEnvironment;
+          provider?: string;
+          provider_status?: FiscalProviderStatus;
+          provider_error?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<{
+          id: string;
+          organization_id: string;
+          cnpj: string;
+          regime_tributario: RegimeTributario;
+          inscricao_estadual: string | null;
+          environment: FiscalEnvironment;
+          provider: string;
+          provider_status: FiscalProviderStatus;
+          provider_error: string | null;
+          created_at: string;
+          updated_at: string;
+        }>;
+        Relationships: [];
+      };
+      fiscal_documents: {
+        Row: {
+          id: string;
+          organization_id: string;
+          sale_id: string;
+          type: FiscalDocumentType;
+          status: FiscalDocumentStatus;
+          provider_ref: string | null;
+          numero: string | null;
+          serie: string | null;
+          chave_acesso: string | null;
+          xml_url: string | null;
+          danfe_url: string | null;
+          error_message: string | null;
+          requested_by: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          sale_id: string;
+          type: FiscalDocumentType;
+          status?: FiscalDocumentStatus;
+          provider_ref?: string | null;
+          numero?: string | null;
+          serie?: string | null;
+          chave_acesso?: string | null;
+          xml_url?: string | null;
+          danfe_url?: string | null;
+          error_message?: string | null;
+          requested_by?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<{
+          id: string;
+          organization_id: string;
+          sale_id: string;
+          type: FiscalDocumentType;
+          status: FiscalDocumentStatus;
+          provider_ref: string | null;
+          numero: string | null;
+          serie: string | null;
+          chave_acesso: string | null;
+          xml_url: string | null;
+          danfe_url: string | null;
+          error_message: string | null;
+          requested_by: string | null;
+          created_at: string;
+          updated_at: string;
+        }>;
+        Relationships: [
+          {
+            foreignKeyName: "fiscal_documents_sale_id_fkey";
+            columns: ["sale_id"];
+            isOneToOne: true;
+            referencedRelation: "sales";
             referencedColumns: ["id"];
           },
         ];

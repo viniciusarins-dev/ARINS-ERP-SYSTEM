@@ -14,10 +14,14 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
     data: { session },
   } = await supabase.auth.getSession();
 
+  const isFormData = options.body instanceof FormData;
+
   const res = await fetch(`${import.meta.env.VITE_API_URL}${path}`, {
     ...options,
     headers: {
-      "Content-Type": "application/json",
+      // FormData sets its own multipart Content-Type (with boundary) — never
+      // override it, or the server can't parse the upload.
+      ...(isFormData ? {} : { "Content-Type": "application/json" }),
       ...(session ? { Authorization: `Bearer ${session.access_token}` } : {}),
       ...options.headers,
     },
@@ -42,4 +46,5 @@ export const api = {
     request<T>(path, { method: "POST", body: data !== undefined ? JSON.stringify(data) : undefined }),
   patch: <T>(path: string, data?: unknown) =>
     request<T>(path, { method: "PATCH", body: data !== undefined ? JSON.stringify(data) : undefined }),
+  putForm: <T>(path: string, formData: FormData) => request<T>(path, { method: "PUT", body: formData }),
 };

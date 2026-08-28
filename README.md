@@ -54,6 +54,33 @@ Pontos que merecem atencao ao ler o schema (`supabase/migrations/`):
 - Cancelar uma venda (`cancel_sale`) estorna o estoque via novos movimentos de `entrada`
   (auditavel), em vez de apagar/editar os movimentos originais.
 
+## Fiscal (NF-e/NFC-e)
+
+Integracao com a [Focus NFe](https://focusnfe.com.br) (`apps/api/src/lib/focus-nfe-client.ts`).
+Pontos de seguranca que valem a pena conhecer antes de mexer aqui:
+
+- **O certificado digital A1 de cada cliente nunca e persistido.** Ele chega via upload
+  (`PUT /api/fiscal/config`, `multer` com `memoryStorage` — nunca grava em disco), e nesse
+  mesmo request e repassado pra Focus NFe (que assume a custodia dele) e descartado da
+  memoria do processo. A tabela `fiscal_configs` guarda so metadados (CNPJ, regime, status) —
+  nunca o certificado nem a senha.
+- **A ARINS usa uma unica conta na Focus NFe** (token em `FOCUS_NFE_API_TOKEN`, so no
+  `apps/api`, nunca chega no browser) e registra uma "empresa" la pra cada organizacao via
+  API — e assim que o modelo multi-tenant funciona: um cliente da ARINS nao precisa saber que
+  a Focus NFe existe por baixo.
+- **Emissao e idempotente**: `fiscal_documents.sale_id` e `unique`, entao reenviar a mesma
+  venda (retry de rede, duplo clique) atualiza a linha existente em vez de arriscar emitir
+  nota duplicada.
+- **O webhook (`POST /api/fiscal/webhooks/focus-nfe/:secret`) e a unica rota que usa a
+  service role key** — a Focus NFe chama ele direto, sem JWT de usuario nosso, entao a
+  autenticidade e checada por um segredo (`FOCUS_NFE_WEBHOOK_SECRET`) embutido na propria URL
+  em vez de sessao.
+- Os nomes exatos de campo do payload da Focus NFe em `focus-nfe-client.ts` e
+  `routes/fiscal-webhook.ts` foram escritos a partir da documentacao publica deles, ainda sem
+  testar contra uma conta real — validar/ajustar assim que houver um `FOCUS_NFE_API_TOKEN` de
+  verdade (conta gratuita de 30 dias, sem CNPJ pra so explorar a API: veja
+  [focusnfe.com.br/cadastro](https://focusnfe.com.br/cadastro/)).
+
 ## Estrutura do projeto
 
 ```
@@ -61,10 +88,11 @@ supabase/migrations/          # schema SQL (compartilhado pelas duas apps)
   0001_orgs_and_members.sql     # organizations, memberships, RLS base, criacao de org
   0002_catalog.sql               # categories, products, stock_movements + trigger de estoque
   0003_customers_and_sales.sql   # customers, sales, sale_items + RPCs create_sale/cancel_sale
+  0004_fiscal.sql                 # fiscal_configs, fiscal_documents (nunca guarda certificado)
 
 packages/shared/src/
   types/database.ts             # tipos do schema Supabase
-  validations/                  # schemas Zod por modulo (auth, product, customer, sale)
+  validations/                  # schemas Zod por modulo (auth, product, customer, sale, fiscal)
   format.ts, slug.ts
 
 apps/api/src/
@@ -72,22 +100,25 @@ apps/api/src/
   middleware/auth.ts             # valida o bearer token, cria client Supabase escopado ao usuario
   middleware/organization.ts     # resolve a organizacao do usuario, 404 se nao tiver
   lib/organizations.ts
-  routes/                        # organizations, dashboard, categories, products, customers, sales
+  lib/focus-nfe-client.ts        # wrapper da API da Focus NFe
+  routes/                        # organizations, dashboard, categories, products, customers,
+                                  # sales, fiscal, fiscal-webhook
 
 apps/web/src/
   lib/
     supabase.ts                  # client Supabase do browser (auth)
     api.ts                       # fetch wrapper que injeta o bearer token
     auth-context.tsx             # sessao + organizacao atual (React context)
+    theme-context.tsx            # tema claro/escuro (persistido em localStorage)
   components/
     route-guards.tsx             # GuestOnlyRoute / OnboardingRoute / RequireOrganizationRoute
-    app-shell.tsx, app-nav.tsx
+    app-shell.tsx, app-sidebar.tsx, theme-toggle.tsx
     ui/                          # kit de componentes (shadcn-style)
   pages/
     LoginPage, SignupPage, OnboardingPage, DashboardPage, ConfiguracoesPage
     produtos/                    # catalogo + estoque
     clientes/                    # cadastro de clientes
-    vendas/                      # historico de vendas + nova venda (carrinho)
+    vendas/                      # historico de vendas + nova venda (carrinho) + emissao de NFC-e
 ```
 
 ## Configuracao
@@ -112,7 +143,10 @@ cp apps/api/.env.example apps/api/.env
 ```
 
 `apps/api/.env` tambem define `PORT` (padrao 3001) e `CORS_ORIGIN` (padrao
-`http://localhost:5173`, o dev server do Vite).
+`http://localhost:5173`, o dev server do Vite). As variaveis de fiscal
+(`FOCUS_NFE_API_TOKEN`, `SUPABASE_SERVICE_ROLE_KEY`, `FOCUS_NFE_WEBHOOK_SECRET`) sao
+opcionais — sem elas, o resto do app funciona normalmente e as rotas `/api/fiscal/*`
+retornam 503 em vez de emitir nota.
 
 ### 3. Instalar e rodar
 
@@ -128,7 +162,9 @@ Abra [http://localhost:5173](http://localhost:5173).
 
 ## Proximos passos sugeridos
 
-- Emissao de NF-e (integracao com a SEFAZ ou um provedor como Focus NFe/eNotas).
+- Validar o modulo fiscal contra uma conta real da Focus NFe (homologacao) e ajustar os
+  nomes de campo em `focus-nfe-client.ts`/`fiscal-webhook.ts` se a documentacao atual
+  divergir do que foi escrito aqui.
 - Multiplas organizacoes por usuario (o schema ja suporta; falta o seletor na UI).
 - Convite de membros da equipe (hoje so o criador da empresa tem acesso).
 - Relatorios (curva ABC, margem por produto, inadimplencia).
