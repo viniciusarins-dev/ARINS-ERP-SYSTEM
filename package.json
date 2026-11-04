@@ -10,7 +10,9 @@
     "dev:api": "npm run dev --workspace apps/api",
     "build": "npm run typecheck --workspace packages/shared && npm run build --workspace apps/api && npm run build --workspace apps/web",
     "lint": "npm run lint --workspace apps/web && npm run lint --workspace apps/api",
-    "typecheck": "npm run typecheck --workspace packages/shared && npm run typecheck --workspace apps/api && npm run typecheck --workspace apps/web"
+    "typecheck": "npm run typecheck --workspace packages/shared && npm run typecheck --workspace apps/api && npm run typecheck --workspace apps/web",
+    "dev:cobrancas": "npm run dev --workspace apps/cobrancas",
+    "build:cobrancas": "npm run build --workspace apps/cobrancas"
   },
   "devDependencies": {
     "typescript": "^5"
