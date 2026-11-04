@@ -19,7 +19,6 @@ import { useState, type ReactNode } from "react";
 
 import { Logo, LogoMark } from "@/components/brand/Logo";
 import { Sparkle } from "@/components/brand/Sparkle";
-import { AppShell } from "@/components/layout/AppShell";
 import { Button } from "@/components/ui/Button";
 import { ChargeButton } from "@/components/ui/ChargeButton";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -29,7 +28,7 @@ import { MoneyInput } from "@/components/ui/MoneyInput";
 import { Panel } from "@/components/ui/Panel";
 import { Segmented } from "@/components/ui/Segmented";
 import { StatusBadge } from "@/components/ui/StatusBadge";
-import { Toast } from "@/components/ui/Toast";
+import { ToastCard } from "@/components/ui/Toaster";
 import { brand } from "@/config/brand";
 import { cn } from "@/lib/cn";
 import { formatBRL, formatDate } from "@/lib/format";
@@ -68,7 +67,7 @@ export function StyleGuide() {
   const remaining = Math.max(total - (hadDownPayment === "sim" ? entry : 0), 0);
 
   return (
-    <AppShell active="identidade">
+    <div className="mx-auto w-full max-w-[1240px] px-4 py-8 sm:px-6 lg:px-8">
       {/* HERO */}
       <section className="relative mb-10 overflow-hidden rounded-[28px] border-[1.5px] border-noite bg-noite text-creme shadow-hard-lg">
         <div className="dot-grid absolute inset-0" aria-hidden="true" />
@@ -351,8 +350,8 @@ export function StyleGuide() {
       <Section index="09" title="Feedback e estados vazios" description="Toda ação responde. Todo vazio orienta o próximo passo.">
         <div className="grid gap-4 lg:grid-cols-2">
           <Panel title="Notificações" code="toast" bodyClassName="flex flex-col gap-3 bg-creme-100">
-            <Toast title="Pagamento registrado" description="Parcela 2/3 · R$ 500,00 · indicadores atualizados." />
-            <Toast tone="warning" title="Essa parcela já está paga" description="Nada foi registrado em duplicidade." />
+            <ToastCard item={{ title: "Pagamento registrado", description: "Parcela 2/3 · R$ 500,00 · indicadores atualizados.", action: { label: "Desfazer", onClick: () => {} } }} />
+            <ToastCard item={{ tone: "warning", title: "Essa parcela já está paga", description: "Nada foi registrado em duplicidade." }} />
           </Panel>
           <Panel title="Nenhum cliente" code="empty">
             <EmptyState
@@ -396,7 +395,7 @@ export function StyleGuide() {
       <footer className="mt-4 flex items-center gap-2 font-pixel text-[10px] text-cafe-300">
         <Sparkle className="size-3 text-laranja" /> {brand.fullName} {brand.version} · dados desta página são fictícios
       </footer>
-    </AppShell>
+    </div>
   );
 }
 

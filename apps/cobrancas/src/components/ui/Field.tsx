@@ -8,13 +8,14 @@ type FieldProps = {
   error?: string;
   children: (id: string, describedBy?: string) => ReactNode;
   className?: string;
+  "data-field"?: string;
 };
 
-export function Field({ label, hint, error, children, className }: FieldProps) {
+export function Field({ label, hint, error, children, className, "data-field": dataField }: FieldProps) {
   const id = useId();
   const descId = hint || error ? `${id}-desc` : undefined;
   return (
-    <div className={cn("flex flex-col gap-1.5", className)}>
+    <div className={cn("flex flex-col gap-1.5", className)} data-field={dataField}>
       <label htmlFor={id} className="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-cafe">
         {label}
       </label>

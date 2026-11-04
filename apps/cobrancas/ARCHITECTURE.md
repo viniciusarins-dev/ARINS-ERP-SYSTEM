@@ -24,7 +24,7 @@ Browser (React SPA, Vercel)
 
 ```
 apps/cobrancas/
-├── supabase/migrations/      # SQL versionado (Etapa 7)
+├── supabase/migrations/      # SQL versionado
 └── src/
     ├── config/brand.ts       # nome do produto (troca em 1 lugar)
     ├── styles/index.css      # tokens de design + utilitários de identidade
@@ -33,14 +33,18 @@ apps/cobrancas/
     │   ├── layout/           # AppShell (sidebar desktop / dock mobile)
     │   └── ui/               # Button, ChargeButton, Panel, StatusBadge, Field,
     │                         # MoneyInput, Segmented, KpiCard, EmptyState, Toast
-    ├── features/             # (Etapas 2–6) clients, installments, payments, whatsapp
-    │   └── <feature>/        # api.ts · hooks · components · lógica pura testável
-    ├── lib/                  # format (BRL/datas), cn, supabase client
+    ├── domain/               # regras puras + testes: datas, parcelamento, status,
+    │                         # telefone/wa.me, mensagem de cobrança, agregados financeiros
+    ├── data/                 # Repository (interface), Supabase e modo local, DataProvider
+    ├── auth/                 # AuthProvider (Supabase Auth)
+    ├── features/             # clients (lista, formulário), charge (COBRAR), payments
+    ├── hooks/                # useToday (status muda sozinho na virada do dia)
+    ├── lib/                  # format (BRL/datas), cn, env, supabase client
     ├── pages/                # telas roteadas
     └── types/
 ```
 
-## Modelo de dados (Etapa 7)
+## Modelo de dados
 
 | Tabela         | Campos principais                                                                 |
 | -------------- | --------------------------------------------------------------------------------- |

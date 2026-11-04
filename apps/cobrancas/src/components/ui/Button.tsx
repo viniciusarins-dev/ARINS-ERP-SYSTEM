@@ -42,6 +42,11 @@ const sizes: Record<Size, string> = {
   lg: "h-12 rounded-[14px] px-5 text-[15px]",
 };
 
+/** Classes do botão, para aplicar em links (<Link>) com a mesma aparência. */
+export function buttonClass(variant: Variant = "primary", size: Size = "md", className?: string) {
+  return cn(base, variants[variant], sizes[size], className);
+}
+
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
   { variant = "primary", size = "md", icon, iconRight, loading, className, children, disabled, ...props },
   ref,
