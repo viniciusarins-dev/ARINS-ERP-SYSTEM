@@ -109,8 +109,9 @@ create policy payments_owner on public.payments
     and exists (select 1 from public.installments i where i.id = installment_id and i.owner_id = (select auth.uid()))
   );
 
--- Nada para o papel anônimo.
+-- Nada para o papel anônimo; acesso explícito para usuários logados (filtrado pelo RLS).
 revoke all on public.clients, public.projects, public.installments, public.payments from anon;
+grant select, insert, update, delete on public.clients, public.projects, public.installments, public.payments to authenticated;
 
 -- ---------------------------------------------------------------------
 -- Funções (SECURITY INVOKER: rodam como o usuário, RLS continua valendo)
@@ -296,6 +297,7 @@ exception
     raise exception 'already_paid';
 end $$;
 
+revoke execute on function public.touch_updated_at() from public, anon, authenticated;
 revoke execute on function public._write_schedule(uuid, bigint, jsonb) from public, anon;
 grant execute on function public._write_schedule(uuid, bigint, jsonb) to authenticated;
 revoke execute on function public.create_client_with_project(text, text, text, bigint, bigint, text, integer, date, jsonb) from public, anon;
