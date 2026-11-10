@@ -7,6 +7,8 @@ import { supabase } from "@/lib/supabase";
 type AuthState = {
   status: "loading" | "signedIn" | "signedOut";
   email: string | null;
+  /** Nome de exibição (metadado full_name) ou a parte do e-mail antes do @. */
+  displayName: string | null;
   /** Conta criada com senha provisória: precisa definir uma senha própria antes de usar o sistema. */
   mustChangePassword: boolean;
   signIn: (email: string, password: string) => Promise<string | null>;
@@ -25,12 +27,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [status, setStatus] = useState<AuthState["status"]>(backendMode === "local" ? "signedIn" : "loading");
   const [email, setEmail] = useState<string | null>(null);
   const [mustChangePassword, setMustChangePassword] = useState(false);
+  const [displayName, setDisplayName] = useState<string | null>(null);
 
   useEffect(() => {
     if (!supabase) return;
     const apply = (session: Session | null) => {
       setEmail(session?.user.email ?? null);
       setMustChangePassword(mustChange(session));
+      const meta = session?.user.user_metadata?.full_name;
+      setDisplayName(typeof meta === "string" && meta.trim() ? meta.trim() : (session?.user.email?.split("@")[0] ?? null));
       setStatus(session ? "signedIn" : "signedOut");
     };
     supabase.auth.getSession().then(({ data }) => apply(data.session));
@@ -42,6 +47,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     () => ({
       status,
       email,
+      displayName,
       mustChangePassword,
       async signIn(mail, password) {
         if (!supabase) return null;
@@ -70,7 +76,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return "Não foi possível alterar a senha. Tente novamente.";
       },
     }),
-    [status, email, mustChangePassword],
+    [status, email, displayName, mustChangePassword],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -11,10 +11,7 @@ type MoneyInputProps = Omit<InputHTMLAttributes<HTMLInputElement>, "value" | "on
   invalid?: boolean;
 };
 
-/**
- * Máscara monetária no estilo "caixa registradora": os dígitos entram pela
- * direita (digitar 1500 → 15,00). Trabalha sempre em centavos inteiros.
- */
+/** Máscara monetária: os dígitos entram pela direita (1500 → 15,00). Sempre em centavos. */
 export const MoneyInput = forwardRef<HTMLInputElement, MoneyInputProps>(function MoneyInput(
   { value, onValueChange, className, ...props },
   ref,
@@ -25,7 +22,7 @@ export const MoneyInput = forwardRef<HTMLInputElement, MoneyInputProps>(function
       prefix="R$"
       inputMode="numeric"
       autoComplete="off"
-      className={`tabular font-mono text-[15px] ${className ?? ""}`}
+      className={`tabular font-semibold ${className ?? ""}`}
       value={value ? formatBRLNumber(value) : ""}
       placeholder="0,00"
       onChange={(e) => {

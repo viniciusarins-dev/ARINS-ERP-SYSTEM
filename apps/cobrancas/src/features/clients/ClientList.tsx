@@ -1,6 +1,6 @@
 import { Plus, Search, SearchX, Users, X } from "lucide-react";
 import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 
 import { buttonClass } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -30,7 +30,11 @@ function normalize(s: string) {
 
 export function ClientList({ views, title = "Clientes" }: { views: ClientView[]; title?: string }) {
   const [query, setQuery] = useState("");
-  const [filter, setFilter] = useState<Filter>("todos");
+  const [params] = useSearchParams();
+  const fromUrl = params.get("situacao");
+  const [filter, setFilter] = useState<Filter>(
+    filters.some((f) => f.value === fromUrl) ? (fromUrl as Filter) : "todos",
+  );
   const charge = useCharge();
 
   const counts = useMemo(() => {
@@ -48,7 +52,7 @@ export function ClientList({ views, title = "Clientes" }: { views: ClientView[];
 
   if (views.length === 0) {
     return (
-      <Panel title={title} code="cli/00">
+      <Panel title={title}>
         <EmptyState
           icon={<Users />}
           title="Nenhum cliente por aqui"
@@ -64,10 +68,10 @@ export function ClientList({ views, title = "Clientes" }: { views: ClientView[];
   }
 
   return (
-    <Panel title={title} code={`cli/${String(views.length).padStart(2, "0")}`} bodyClassName="p-0 sm:p-0">
-      <div className="flex flex-col gap-3 border-b-[1.5px] border-noite/10 p-4 lg:flex-row lg:items-center">
+    <Panel title={title} bodyClassName="p-0 sm:p-0">
+      <div className="flex flex-col gap-3 border-b border-white/[0.06] p-4 lg:flex-row lg:items-center">
         <div className="relative flex-1">
-          <Search className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-cafe-300" />
+          <Search className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-mist-600" />
           <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
@@ -80,7 +84,7 @@ export function ClientList({ views, title = "Clientes" }: { views: ClientView[];
             <button
               aria-label="Limpar busca"
               onClick={() => setQuery("")}
-              className="absolute right-2 top-1/2 grid size-7 -translate-y-1/2 place-items-center rounded-lg text-cafe-300 hover:bg-noite/5 hover:text-noite"
+              className="absolute right-2 top-1/2 grid size-7 -translate-y-1/2 place-items-center rounded-lg text-mist-600 hover:bg-white/[0.06] hover:text-ice"
             >
               <X className="size-4" />
             </button>
@@ -95,15 +99,17 @@ export function ClientList({ views, title = "Clientes" }: { views: ClientView[];
                 aria-pressed={active}
                 onClick={() => setFilter(f.value)}
                 className={cn(
-                  "inline-flex h-9 shrink-0 items-center gap-1.5 rounded-chip border-[1.5px] px-3.5 text-[13px] font-semibold transition-colors",
-                  active ? "border-noite bg-noite text-creme" : "border-noite/20 text-cafe hover:border-noite/50",
+                  "inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full border px-3.5 text-[13px] font-semibold transition-colors",
+                  active
+                    ? "border-gold/50 bg-gold/[0.14] text-gold-200"
+                    : "border-white/10 text-mist hover:border-white/25 hover:text-ice",
                 )}
               >
                 {f.label}
                 <span
                   className={cn(
-                    "tabular rounded-full px-1.5 font-mono text-[10px]",
-                    active ? "bg-creme/15 text-creme" : "bg-noite/5 text-cafe-300",
+                    "tabular rounded-full px-1.5 text-[10px]",
+                    active ? "bg-gold/20 text-gold-200" : "bg-white/[0.06] text-mist-600",
                   )}
                 >
                   {counts[f.value]}

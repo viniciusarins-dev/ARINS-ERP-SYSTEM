@@ -49,7 +49,7 @@ function ChargeDialog({
   const view = target ? views.find((v) => v.client.id === target.clientId) : undefined;
 
   return (
-    <Dialog open={Boolean(target && view)} onClose={onClose} title="Cobrar pelo WhatsApp" code="wa.me">
+    <Dialog open={Boolean(target && view)} onClose={onClose} title="Cobrar pelo WhatsApp">
       {view && <ChargeContent key={view.client.id} view={view} initialId={target?.installmentId} onDone={onClose} />}
     </Dialog>
   );
@@ -83,7 +83,7 @@ function ChargeContent({ view, initialId, onDone }: { view: ClientView; initialI
   const phone = validatePhone(view.client.whatsapp);
 
   if (!selected) {
-    return <p className="text-sm text-cafe">Nenhuma parcela em aberto para este cliente.</p>;
+    return <p className="text-sm text-mist">Nenhuma parcela em aberto para este cliente.</p>;
   }
 
   const choose = (inst: InstallmentView) => {
@@ -103,7 +103,7 @@ function ChargeContent({ view, initialId, onDone }: { view: ClientView; initialI
       <div className="flex items-center justify-between gap-3">
         <div className="min-w-0">
           <p className="truncate font-semibold">{view.client.fullName}</p>
-          <p className="font-mono text-xs text-cafe-300">
+          <p className="text-xs text-mist-600">
             {phone.ok ? `+55 ${formatPhone(phone.national)}` : "WhatsApp inválido"} · {view.project?.name}
           </p>
         </div>
@@ -112,7 +112,7 @@ function ChargeContent({ view, initialId, onDone }: { view: ClientView; initialI
 
       {open.length > 1 && (
         <fieldset>
-          <legend className="mb-2 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-cafe">
+          <legend className="mb-2 text-[13px] font-medium text-mist">
             Parcela a cobrar
           </legend>
           <div className="flex max-h-48 flex-col gap-1.5 overflow-y-auto pr-1">
@@ -123,8 +123,8 @@ function ChargeContent({ view, initialId, onDone }: { view: ClientView; initialI
                   key={inst.id}
                   className={cn(
                     "flex cursor-pointer items-center gap-3 rounded-xl border-[1.5px] px-3 py-2.5 transition-colors",
-                    "has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-laranja",
-                    active ? "border-noite bg-creme-100 shadow-hard-sm" : "border-noite/15 hover:border-noite/40",
+                    "has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-cyan",
+                    active ? "border-cyan/50 bg-cyan/[0.07] shadow-[0_0_20px_-10px_rgba(53,221,251,0.9)]" : "border-white/10 hover:border-white/25",
                   )}
                 >
                   <input
@@ -136,14 +136,14 @@ function ChargeContent({ view, initialId, onDone }: { view: ClientView; initialI
                   />
                   <span
                     className={cn(
-                      "grid size-4 shrink-0 place-items-center rounded-full border-[1.5px] border-noite",
-                      active && "bg-laranja",
+                      "grid size-4 shrink-0 place-items-center rounded-full border border-white/30",
+                      active && "border-cyan bg-cyan",
                     )}
                   >
-                    {active && <span className="size-1.5 rounded-full bg-creme-50" />}
+                    {active && <span className="size-1.5 rounded-full bg-ink" />}
                   </span>
-                  <span className="tabular flex-1 font-mono text-[13px]">
-                    <b className="font-semibold">
+                  <span className="tabular flex-1 text-[13px] text-mist">
+                    <b className="font-semibold text-ice">
                       {inst.number}/{inst.total}
                     </b>{" "}
                     · {formatBRL(inst.amountCents)} · {formatDate(inst.dueDate)}
@@ -159,10 +159,10 @@ function ChargeContent({ view, initialId, onDone }: { view: ClientView; initialI
       <div>
         <label
           htmlFor="charge-message"
-          className="mb-2 flex items-center justify-between font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-cafe"
+          className="mb-2 flex items-center justify-between text-[13px] font-medium text-mist"
         >
           Mensagem
-          <span className="normal-case tracking-normal text-cafe-300">pode editar antes de enviar</span>
+          <span className="text-xs text-mist-600">pode editar antes de enviar</span>
         </label>
         <textarea
           id="charge-message"
@@ -174,7 +174,7 @@ function ChargeContent({ view, initialId, onDone }: { view: ClientView; initialI
       </div>
 
       {!phone.ok && (
-        <div className="flex items-start gap-3 rounded-xl border-[1.5px] border-laranja/50 bg-laranja/10 p-3 text-sm text-laranja-700">
+        <div className="flex items-start gap-3 rounded-xl border border-danger/40 bg-danger/10 p-3 text-sm text-[#ff8f9a]">
           <CircleAlert className="mt-0.5 size-4 shrink-0" />
           <div className="flex-1">
             <p className="font-semibold">{phone.error}</p>

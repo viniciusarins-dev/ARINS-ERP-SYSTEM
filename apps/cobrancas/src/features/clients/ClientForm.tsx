@@ -1,4 +1,4 @@
-import { CalendarDays, Lock, Minus, Plus, Repeat, Save, Zap } from "lucide-react";
+import { Calculator, CalendarDays, Landmark, Lock, Minus, Plus, Repeat, Save, UserRound, Zap } from "lucide-react";
 import { useMemo, useState, type FormEvent } from "react";
 
 import { Button } from "@/components/ui/Button";
@@ -140,7 +140,7 @@ export function ClientForm({ today, view, submitLabel, onSubmit, onCancel }: Cli
   return (
     <form onSubmit={submit} noValidate className="grid items-start gap-5 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]">
       <div className="flex flex-col gap-5">
-        <Panel title="Cliente" code="01">
+        <Panel title="Cliente" icon={<UserRound />}>
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label="Nome completo" error={errors.fullName} className="sm:col-span-2" data-field="fullName">
               {(id, d) => (
@@ -187,9 +187,9 @@ export function ClientForm({ today, view, submitLabel, onSubmit, onCancel }: Cli
           </div>
         </Panel>
 
-        <Panel title="Financeiro" code="02">
+        <Panel title="Financeiro" icon={<Landmark />}>
           {locked && (
-            <p className="mb-4 flex items-start gap-2.5 rounded-xl border-[1.5px] border-noite/15 bg-creme-100 p-3 text-sm text-cafe">
+            <p className="mb-4 flex items-start gap-2.5 rounded-xl border border-gold/25 bg-gold/[0.06] p-3 text-sm text-gold-200">
               <Lock className="mt-0.5 size-4 shrink-0" />
               Já existem pagamentos registrados, por isso os valores e parcelas estão bloqueados para edição.
             </p>
@@ -320,18 +320,18 @@ function Stepper({
   invalid?: boolean;
 }) {
   const btn =
-    "grid size-11 shrink-0 place-items-center border-noite text-noite transition-colors hover:bg-creme-300/60 active:bg-creme-300 disabled:opacity-40";
+    "grid size-11 shrink-0 place-items-center border-white/10 text-mist transition-colors hover:bg-white/[0.06] hover:text-gold active:bg-white/[0.1] disabled:opacity-30";
   return (
     <div
       className={cn(
-        "flex h-11 items-stretch overflow-hidden rounded-control border-[1.5px] border-noite bg-white/70",
-        invalid && "border-laranja-600",
+        "flex h-11 items-stretch overflow-hidden rounded-xl border border-white/10 bg-white/[0.035] focus-within:border-cyan/70 focus-within:shadow-[0_0_0_4px_rgba(53,221,251,0.12)]",
+        invalid && "border-danger/60",
       )}
     >
       <button
         type="button"
         aria-label="Diminuir"
-        className={cn(btn, "border-r-[1.5px]")}
+        className={cn(btn, "border-r")}
         disabled={value <= 1}
         onClick={() => onChange(Math.max(1, value - 1))}
       >
@@ -343,12 +343,12 @@ function Stepper({
         inputMode="numeric"
         value={value || ""}
         onChange={(e) => onChange(Math.min(MAX_INSTALLMENTS, parseInt(e.target.value.replace(/\D/g, "") || "0", 10)))}
-        className="tabular w-full min-w-0 bg-transparent text-center font-display text-lg font-bold focus:outline-none"
+        className="tabular w-full min-w-0 bg-transparent text-center text-lg font-bold text-ice focus:outline-none"
       />
       <button
         type="button"
         aria-label="Aumentar"
-        className={cn(btn, "border-l-[1.5px]")}
+        className={cn(btn, "border-l")}
         disabled={value >= MAX_INSTALLMENTS}
         onClick={() => onChange(Math.min(MAX_INSTALLMENTS, value + 1))}
       >
@@ -373,31 +373,31 @@ function Summary({
 }) {
   const amounts = new Set(schedule.map((s) => s.amountCents));
   return (
-    <Panel tone="dark" title="Resumo" code="calc" bodyClassName="dot-grid" className="lg:sticky lg:top-8">
-      <dl className="space-y-2.5 font-mono text-sm">
+    <Panel tone="dark" title="Resumo" icon={<Calculator />} className="lg:sticky lg:top-24">
+      <dl className="space-y-2.5 text-sm">
         <div className="flex justify-between gap-4">
-          <dt className="text-creme/55">Valor total</dt>
+          <dt className="text-mist">Valor total</dt>
           <dd className="tabular font-semibold">{formatBRL(totalCents)}</dd>
         </div>
         <div className="flex justify-between gap-4">
-          <dt className="text-creme/55">Entrada</dt>
+          <dt className="text-mist">Entrada</dt>
           <dd className="tabular font-semibold">− {formatBRL(entryCents)}</dd>
         </div>
       </dl>
-      <div className="my-4 border-t-[1.5px] border-dashed border-creme/20" />
-      <p className="font-mono text-[10.5px] uppercase tracking-[0.14em] text-creme/55">Restante</p>
-      <p className="tabular mt-1 font-display text-4xl font-[800] tracking-[-0.04em] text-laranja">{formatBRL(remaining)}</p>
+      <div className="my-4 border-t border-dashed border-white/10" />
+      <p className="eyebrow">Restante</p>
+      <p className="tabular mt-1 text-4xl font-bold tracking-[-0.03em] text-gold-metal">{formatBRL(remaining)}</p>
 
       {totalCents > 0 && remaining === 0 && (
-        <p className="mt-4 rounded-xl border-[1.5px] border-oliva/40 bg-oliva/15 p-3 text-sm text-oliva-300">
+        <p className="mt-4 rounded-xl border border-success/35 bg-success/10 p-3 text-sm text-success">
           Quitado na entrada — nenhuma parcela será gerada.
         </p>
       )}
 
       {schedule.length > 0 && (
         <>
-          <p className="mt-5 text-sm text-creme/80">
-            <b className="font-semibold text-creme">
+          <p className="mt-5 text-sm text-mist">
+            <b className="font-semibold text-ice">
               {schedule.length}× {amounts.size === 1 ? formatBRL(schedule[0].amountCents) : "de valores ajustados"}
             </b>{" "}
             · {planLabel[plan].toLowerCase()}
@@ -406,18 +406,18 @@ function Summary({
             {schedule.map((s) => (
               <li
                 key={s.number}
-                className="tabular flex items-center gap-3 rounded-xl border-[1.5px] border-creme/10 bg-noite-800 px-3 py-2 font-mono text-[13px]"
+                className="tabular flex items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 py-2 text-[13px]"
               >
-                <span className="w-12 font-pixel text-[10px] text-creme/45">
+                <span className="w-12 text-[11px] font-semibold text-gold/70">
                   {s.number}/{schedule.length}
                 </span>
-                <span className="flex-1 text-creme/70">{formatDate(s.dueDate)}</span>
+                <span className="flex-1 text-mist">{formatDate(s.dueDate)}</span>
                 <span className="font-semibold">{formatBRL(s.amountCents)}</span>
               </li>
             ))}
           </ol>
           {amounts.size > 1 && (
-            <p className="mt-3 text-xs text-creme/45">Centavos distribuídos nas primeiras parcelas para a soma fechar exata.</p>
+            <p className="mt-3 text-xs text-mist-600">Centavos distribuídos nas primeiras parcelas para a soma fechar exata.</p>
           )}
         </>
       )}

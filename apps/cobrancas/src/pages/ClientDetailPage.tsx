@@ -1,4 +1,4 @@
-import { CircleDollarSign, Inbox, Pencil, Phone, RotateCcw, Trash2 } from "lucide-react";
+import { CircleDollarSign, Inbox, Layers3, Pencil, Phone, RotateCcw, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
@@ -40,8 +40,8 @@ export function ClientDetailPage() {
         description={
           <span className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
             <StatusBadge status={view.status} />
-            <span className="font-medium text-cafe">{project?.name}</span>
-            <span className="inline-flex items-center gap-1 font-mono text-xs">
+            <span className="font-medium text-ice">{project?.name}</span>
+            <span className="inline-flex items-center gap-1 text-xs text-mist">
               <Phone className="size-3.5" /> {formatPhone(client.whatsapp)}
             </span>
           </span>
@@ -77,14 +77,14 @@ function Overview({ view }: { view: ClientView }) {
 
   return (
     <section className="mb-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-[1.2fr_1fr_1fr_1fr]">
-      <div className="rounded-panel border-[1.5px] border-noite bg-noite p-4 text-creme shadow-hard dot-grid sm:col-span-2 lg:col-span-1">
+      <div className="glass-gold rounded-2xl p-4 sm:col-span-2 sm:p-5 lg:col-span-1">
         <div className="flex items-baseline justify-between">
-          <p className="font-mono text-[10.5px] uppercase tracking-[0.14em] text-creme/55">Progresso</p>
-          <p className="tabular font-display text-2xl font-[800] tracking-[-0.04em] text-laranja">{pct}%</p>
+          <p className="eyebrow">Recebido do projeto</p>
+          <p className="tabular text-2xl font-bold tracking-[-0.02em] text-gold-metal">{pct}%</p>
         </div>
         {/* barra segmentada estilo "carregando" dos anos 2000 */}
         <div
-          className="mt-3 flex gap-[3px] rounded-[10px] border-[1.5px] border-creme/15 bg-noite-800 p-[3px]"
+          className="mt-3 flex gap-[3px] rounded-lg border border-white/[0.06] bg-white/[0.03] p-[3px]"
           role="progressbar"
           aria-valuenow={pct}
           aria-valuemin={0}
@@ -96,17 +96,17 @@ function Overview({ view }: { view: ClientView }) {
               key={i}
               className={cn(
                 "h-3 flex-1 rounded-[3px]",
-                i < filled ? "bg-gradient-to-b from-laranja-300 to-laranja" : "bg-creme/[0.06]",
+                i < filled ? "bg-gradient-to-b from-gold-300 to-gold shadow-[0_0_6px_rgba(217,164,65,0.6)]" : "bg-white/[0.05]",
               )}
             />
           ))}
         </div>
-        <p className="mt-2 font-mono text-[11px] text-creme/50">
+        <p className="mt-2 text-xs text-mist-600">
           {view.project ? `${planLabel[view.project.plan]} · ${view.installments.length} parcela(s)` : ""}
         </p>
       </div>
       <Stat label="Valor do projeto" value={formatBRL(total)} />
-      <Stat label="Recebido" value={formatBRL(view.receivedCents)} accent="text-oliva-700" />
+      <Stat label="Recebido" value={formatBRL(view.receivedCents)} accent="text-success" />
       <Stat
         label="Restante"
         value={formatBRL(view.remainingCents)}
@@ -118,10 +118,10 @@ function Overview({ view }: { view: ClientView }) {
 
 function Stat({ label, value, note, accent }: { label: string; value: string; note?: string; accent?: string }) {
   return (
-    <div className="rounded-panel border-[1.5px] border-noite bg-creme-50 p-4 shadow-hard">
-      <p className="font-mono text-[10.5px] uppercase tracking-[0.14em] text-cafe-300">{label}</p>
-      <p className={cn("tabular mt-2 font-display text-[22px] font-bold tracking-[-0.03em]", accent)}>{value}</p>
-      {note && <p className="mt-1 font-mono text-xs font-semibold text-laranja-700">{note}</p>}
+    <div className="glass rounded-2xl p-4 sm:p-5">
+      <p className="eyebrow">{label}</p>
+      <p className={cn("tabular mt-2 text-[22px] font-bold tracking-[-0.02em]", accent)}>{value}</p>
+      {note && <p className="mt-1 text-xs font-semibold text-[#ff8f9a]">{note}</p>}
     </div>
   );
 }
@@ -151,11 +151,11 @@ function Installments({ view }: { view: ClientView }) {
   const showEntry = tab === "historico" && Boolean(view.project?.downPaymentCents);
 
   return (
-    <Panel title="Parcelas" code={`${view.installments.length}x`} bodyClassName="p-0 sm:p-0">
+    <Panel title="Parcelas" icon={<Layers3 />} bodyClassName="p-0 sm:p-0">
       <div
         role="tablist"
         aria-label="Filtrar parcelas"
-        className="flex gap-1 overflow-x-auto border-b-[1.5px] border-noite/10 px-3 pt-3"
+        className="flex gap-1 overflow-x-auto border-b border-white/[0.06] px-3 pt-3"
       >
         {tabs.map((t) => {
           const active = t.value === tab;
@@ -167,14 +167,14 @@ function Installments({ view }: { view: ClientView }) {
               onClick={() => setTab(t.value)}
               className={cn(
                 "relative -mb-[1.5px] inline-flex h-10 shrink-0 items-center gap-2 rounded-t-[12px] border-[1.5px] border-b-0 px-3.5 text-[13px] font-semibold transition-colors",
-                active ? "border-noite bg-creme-50 text-noite" : "border-transparent text-cafe-300 hover:text-noite",
+                active ? "border-gold/40 bg-gold/[0.08] text-gold-200" : "border-transparent text-mist hover:text-ice",
               )}
             >
               {t.label}
               <span
                 className={cn(
-                  "tabular rounded-full px-1.5 font-mono text-[10px]",
-                  active ? (t.value === "atrasadas" && t.count ? "bg-laranja text-creme-50" : "bg-noite text-creme") : "bg-noite/5",
+                  "tabular rounded-full px-1.5 text-[10px]",
+                  active ? (t.value === "atrasadas" && t.count ? "bg-danger text-ink" : "bg-gold/25 text-gold-200") : "bg-white/[0.06]",
                 )}
               >
                 {t.count}
@@ -212,15 +212,15 @@ function Installments({ view }: { view: ClientView }) {
               <InstallmentRow key={inst.id} view={view} inst={inst} />
             ))}
             {showEntry && (
-              <li className="flex items-center gap-4 rounded-2xl border-[1.5px] border-dashed border-noite/20 p-3">
-                <span className="grid size-11 shrink-0 place-items-center rounded-[12px] border-[1.5px] border-noite bg-oliva font-pixel text-[9px]">
+              <li className="flex items-center gap-4 rounded-2xl border border-dashed border-white/15 p-3">
+                <span className="grid size-11 shrink-0 place-items-center rounded-xl border border-success/40 bg-success/10 text-[10px] font-bold text-success">
                   ENT
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="tabular font-display text-lg font-bold tracking-[-0.03em]">
+                  <p className="tabular text-lg font-bold tracking-[-0.02em]">
                     {formatBRL(view.project!.downPaymentCents)}
                   </p>
-                  <p className="font-mono text-xs text-cafe-300">Entrada · recebida no cadastro</p>
+                  <p className="text-xs text-mist-600">Entrada · recebida no cadastro</p>
                 </div>
                 <StatusBadge status="pago" short />
               </li>
@@ -244,23 +244,23 @@ function InstallmentRow({ view, inst }: { view: ClientView; inst: InstallmentVie
     <li
       className={cn(
         "flex flex-wrap items-center gap-x-4 gap-y-3 rounded-2xl border-[1.5px] p-3 sm:flex-nowrap",
-        inst.status === "atrasado" ? "border-noite bg-creme-100" : "border-noite/15 bg-creme-100/60",
+        inst.status === "atrasado" ? "border-danger/30 bg-danger/[0.04]" : "border-white/[0.07] bg-white/[0.02]",
       )}
     >
       <span
         className={cn(
-          "grid size-11 shrink-0 place-items-center rounded-[12px] border-[1.5px] border-noite font-display text-sm font-bold",
-          paid ? "bg-oliva" : inst.status === "atrasado" ? "bg-noite text-laranja" : "bg-creme-50",
+          "grid size-11 shrink-0 place-items-center rounded-xl border text-sm font-bold",
+          paid ? "border-success/40 bg-success/10 text-success" : inst.status === "atrasado" ? "border-danger/40 bg-danger/10 text-[#ff8f9a]" : "border-gold/30 bg-gold/[0.08] text-gold-200",
         )}
       >
         {inst.number}
         <span className="sr-only"> de {inst.total}</span>
       </span>
       <div className="min-w-0 flex-1">
-        <p className="tabular font-display text-lg font-bold tracking-[-0.03em]">{formatBRL(inst.amountCents)}</p>
-        <p className="font-mono text-xs text-cafe-300">
+        <p className="tabular text-lg font-bold tracking-[-0.02em]">{formatBRL(inst.amountCents)}</p>
+        <p className="text-xs text-mist-600">
           Parcela {inst.number}/{inst.total} · vence {formatDate(inst.dueDate)}
-          {inst.payment && <span className="text-oliva-700"> · paga em {formatDate(inst.payment.paidAt)}</span>}
+          {inst.payment && <span className="text-success"> · paga em {formatDate(inst.payment.paidAt)}</span>}
         </p>
       </div>
       <StatusBadge status={inst.status} short />
@@ -289,7 +289,7 @@ function InstallmentRow({ view, inst }: { view: ClientView; inst: InstallmentVie
         )}
       </div>
 
-      <Dialog open={confirmUndo} onClose={() => setConfirmUndo(false)} title="Desfazer pagamento" code="undo">
+      <Dialog open={confirmUndo} onClose={() => setConfirmUndo(false)} title="Desfazer pagamento">
         <p className="text-sm leading-relaxed">
           A parcela {inst.number}/{inst.total} de {formatBRL(inst.amountCents)} voltará a ficar em aberto. Use apenas se o
           pagamento foi registrado por engano.
@@ -322,7 +322,7 @@ function DeleteDialog({ view, open, onClose }: { view: ClientView; open: boolean
   const [deleting, setDeleting] = useState(false);
 
   return (
-    <Dialog open={open} onClose={onClose} title="Excluir cliente" code="del">
+    <Dialog open={open} onClose={onClose} title="Excluir cliente">
       <p className="text-sm leading-relaxed">
         Excluir <b className="font-semibold">{view.client.fullName}</b> apaga também o projeto, as{" "}
         {view.installments.length} parcela(s) e todo o histórico de pagamentos. Essa ação não pode ser desfeita.

@@ -1,4 +1,4 @@
-import { lazy, Suspense, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
 
 import { AuthProvider, useAuth } from "@/auth/AuthProvider";
@@ -17,11 +17,6 @@ import { MisconfiguredPage } from "@/pages/MisconfiguredPage";
 import { NewClientPage } from "@/pages/NewClientPage";
 import { NotFound } from "@/pages/NotFound";
 import { SetPasswordPage } from "@/pages/SetPasswordPage";
-
-// Guia de identidade visual: só existe em desenvolvimento.
-const StyleGuide = import.meta.env.DEV
-  ? lazy(() => import("@/pages/StyleGuide").then((m) => ({ default: m.StyleGuide })))
-  : null;
 
 function RequireAuth({ children }: { children: ReactNode }) {
   const { status, mustChangePassword } = useAuth();
@@ -58,16 +53,6 @@ export default function App() {
           <Routes>
             <Route path="/entrar" element={<LoginPage />} />
             <Route path="/definir-senha" element={<SetPasswordPage />} />
-            {StyleGuide && (
-              <Route
-                path="/identidade"
-                element={
-                  <Suspense fallback={null}>
-                    <StyleGuide />
-                  </Suspense>
-                }
-              />
-            )}
             <Route element={<PrivateApp />}>
               <Route index element={<Dashboard />} />
               <Route path="clientes" element={<ClientsPage />} />

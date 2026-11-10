@@ -1,69 +1,65 @@
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 
 import { cn } from "@/lib/cn";
 import { formatBRLNumber } from "@/lib/format";
 
+import { Sparkline } from "./Sparkline";
+
+export type KpiAccent = "gold" | "cyan" | "danger" | "success" | "neutral";
+
+const accents: Record<KpiAccent, { color: string; icon: string; border: string; glow: string }> = {
+  gold: { color: "#d9a441", icon: "border-gold/40 bg-gold/10 text-gold", border: "hover:border-gold/40", glow: "rgba(217,164,65,0.18)" },
+  cyan: { color: "#35ddfb", icon: "border-cyan/40 bg-cyan/10 text-cyan", border: "hover:border-cyan/40", glow: "rgba(53,221,251,0.14)" },
+  danger: { color: "#ff5d6c", icon: "border-danger/40 bg-danger/10 text-[#ff8f9a]", border: "hover:border-danger/40", glow: "rgba(255,93,108,0.16)" },
+  success: { color: "#3ddc97", icon: "border-success/40 bg-success/10 text-success", border: "hover:border-success/40", glow: "rgba(61,220,151,0.14)" },
+  neutral: { color: "#9aa3ad", icon: "border-white/15 bg-white/[0.05] text-ice", border: "hover:border-white/20", glow: "transparent" },
+};
+
 type KpiCardProps = {
   label: string;
-  code: string;
   icon: ReactNode;
-  /** em centavos quando money=true; inteiro caso contrário */
+  /** centavos quando money=true; inteiro caso contrário */
   value: number;
   money?: boolean;
   caption?: ReactNode;
-  tone?: "light" | "dark" | "accent";
+  accent?: KpiAccent;
+  spark?: number[];
   className?: string;
-  style?: React.CSSProperties;
+  style?: CSSProperties;
 };
 
-const tones = {
-  light: "bg-creme-50 text-noite",
-  dark: "bg-noite text-creme dot-grid",
-  accent: "bg-laranja text-noite",
-};
-
-export function KpiCard({ label, code, icon, value, money, caption, tone = "light", className, style }: KpiCardProps) {
-  const dark = tone === "dark";
+export function KpiCard({ label, icon, value, money, caption, accent = "neutral", spark, className, style }: KpiCardProps) {
+  const a = accents[accent];
   return (
     <article
       style={style}
       className={cn(
-        "group relative flex min-h-[148px] flex-col justify-between overflow-hidden rounded-panel border-[1.5px] border-noite p-4 shadow-hard",
-        "transition-transform duration-200 hover:-translate-y-0.5 animate-rise",
-        tones[tone],
+        "glass group relative flex min-h-[132px] animate-rise flex-col justify-between overflow-hidden rounded-2xl p-4 sm:p-5",
+        "transition-[border-color,transform] duration-300 hover:-translate-y-0.5",
+        a.border,
         className,
       )}
     >
-      <div className="flex items-center justify-between">
-        <span
-          className={cn(
-            "grid size-8 place-items-center rounded-[10px] border-[1.5px] border-noite [&_svg]:size-4 [&_svg]:stroke-[2]",
-            dark ? "bg-laranja text-noite" : tone === "accent" ? "bg-noite text-laranja" : "chrome text-noite",
-          )}
-        >
-          {icon}
-        </span>
-        <span className={cn("font-pixel text-[10px]", dark ? "text-creme/40" : "text-noite/45")}>{code}</span>
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -right-10 -top-10 size-40 rounded-full"
+        style={{ background: `radial-gradient(circle, ${a.glow}, transparent 70%)` }}
+      />
+      <div className="relative flex items-start gap-3">
+        <span className={cn("grid size-10 shrink-0 place-items-center rounded-xl border [&_svg]:size-5", a.icon)}>{icon}</span>
+        <p className="pt-0.5 text-[13px] font-medium leading-tight text-mist">{label}</p>
       </div>
-
-      <div>
-        <p
-          className={cn(
-            "mb-1 font-mono text-[10.5px] font-semibold uppercase tracking-[0.14em]",
-            dark ? "text-creme/60" : tone === "accent" ? "text-noite/75" : "text-cafe-300",
-          )}
-        >
-          {label}
-        </p>
-        <p className="tabular flex items-baseline gap-1.5 font-display font-[700] leading-none tracking-[-0.03em]">
-          {money && <span className="font-mono text-xs font-semibold opacity-60 sm:text-sm">R$</span>}
-          <span className="whitespace-nowrap text-[clamp(1.15rem,5.4vw,1.75rem)] lg:text-[clamp(1.25rem,1.9vw,1.75rem)]">{money ? formatBRLNumber(value) : value}</span>
-        </p>
-        {caption && (
-          <p className={cn("mt-2 text-xs", dark ? "text-creme/55" : tone === "accent" ? "text-noite/70" : "text-cafe-300")}>
-            {caption}
+      <div className="relative mt-3 flex items-end justify-between gap-2">
+        <div className="min-w-0">
+          <p className="tabular flex items-baseline gap-1.5 font-bold leading-none tracking-[-0.02em] text-ice">
+            {money && <span className="text-sm font-semibold text-mist">R$</span>}
+            <span className="whitespace-nowrap text-[clamp(1.25rem,5.2vw,1.6rem)] lg:text-[clamp(1.2rem,1.7vw,1.6rem)]">
+              {money ? formatBRLNumber(value) : value}
+            </span>
           </p>
-        )}
+          {caption && <p className="mt-1.5 truncate text-xs text-mist-600">{caption}</p>}
+        </div>
+        {spark && <Sparkline data={spark} color={a.color} className="h-10 w-24 shrink-0 sm:w-28" />}
       </div>
     </article>
   );

@@ -9,7 +9,7 @@ import { Panel } from "@/components/ui/Panel";
 export function NotFound({ what = "página" }: { what?: string }) {
   usePageTitle("Não encontrado");
   return (
-    <Panel title="Erro 404" code="404" className="mx-auto mt-6 max-w-lg">
+    <Panel title="Erro 404" className="mx-auto mt-6 max-w-lg">
       <EmptyState
         icon={<FileQuestion />}
         title={`${what[0].toUpperCase()}${what.slice(1)} não encontrad${what === "cliente" ? "o" : "a"}`}

@@ -31,7 +31,6 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
         open={Boolean(target && view && inst)}
         onClose={() => setTarget(null)}
         title="Registrar pagamento"
-        code="pay"
       >
         {view && inst && <PaymentContent key={inst.id} view={view} inst={inst} onDone={() => setTarget(null)} />}
       </Dialog>
@@ -101,19 +100,19 @@ function PaymentContent({ view, inst, onDone }: { view: ClientView; inst: Instal
         void submit();
       }}
     >
-      <div className="flex items-center gap-4 rounded-2xl border-[1.5px] border-noite bg-noite p-4 text-creme dot-grid">
+      <div className="flex items-center gap-4 rounded-2xl border border-gold/25 bg-gradient-to-br from-gold/[0.10] to-transparent p-4">
         <div className="min-w-0 flex-1">
-          <p className="truncate text-sm text-creme/70">
+          <p className="truncate text-sm text-mist">
             {view.client.fullName} · {view.project?.name}
           </p>
-          <p className="tabular mt-1 font-display text-3xl font-[800] tracking-[-0.04em] text-laranja">
+          <p className="tabular mt-1 text-3xl font-bold tracking-[-0.03em] text-gold-metal">
             {formatBRL(inst.amountCents)}
           </p>
-          <p className="mt-1 font-mono text-xs text-creme/55">
+          <p className="mt-1 text-xs text-mist-600">
             Parcela {inst.number}/{inst.total} · vencimento {formatDate(inst.dueDate)}
           </p>
         </div>
-        <StatusBadge status={inst.status} short className="bg-creme-50 text-noite" />
+        <StatusBadge status={inst.status} short />
       </div>
 
       <Field label="Data do recebimento" error={error ?? undefined}>

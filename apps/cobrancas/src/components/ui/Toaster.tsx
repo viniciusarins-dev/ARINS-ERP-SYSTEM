@@ -52,19 +52,19 @@ export function ToastCard({ item, onDismiss }: { item: ToastInput; onDismiss?: (
   return (
     <div
       role="status"
-      className="pointer-events-auto flex w-full max-w-sm animate-rise items-start gap-3 rounded-2xl border-[1.5px] border-noite bg-noite p-3.5 text-creme shadow-hard-lg"
+      className="glass-gold pointer-events-auto flex w-full max-w-sm animate-rise items-start gap-3 rounded-2xl p-3.5 text-ice"
     >
       <span
         className={cn(
-          "gloss grid size-8 shrink-0 place-items-center rounded-[10px] border-[1.5px] border-noite",
-          tone === "success" ? "bg-oliva text-noite" : "bg-laranja text-creme-50",
+          "grid size-8 shrink-0 place-items-center rounded-lg border",
+          tone === "success" ? "border-success/40 bg-success/10 text-success" : "border-warning/40 bg-warning/10 text-warning",
         )}
       >
         <Icon className="size-4.5" strokeWidth={2.2} />
       </span>
       <div className="min-w-0 flex-1 pt-0.5">
         <p className="text-sm font-semibold">{item.title}</p>
-        {item.description && <p className="mt-0.5 text-[13px] text-creme/60">{item.description}</p>}
+        {item.description && <p className="mt-0.5 text-[13px] text-mist">{item.description}</p>}
       </div>
       {item.action && (
         <button
@@ -72,7 +72,7 @@ export function ToastCard({ item, onDismiss }: { item: ToastInput; onDismiss?: (
             item.action!.onClick();
             onDismiss?.();
           }}
-          className="mt-0.5 shrink-0 rounded-lg border border-creme/20 px-2.5 py-1 text-xs font-semibold text-laranja-300 transition-colors hover:bg-creme/10"
+          className="mt-0.5 shrink-0 rounded-lg border border-cyan/40 px-2.5 py-1 text-xs font-semibold text-cyan-300 transition-colors hover:bg-cyan hover:text-ink"
         >
           {item.action.label}
         </button>
@@ -81,7 +81,7 @@ export function ToastCard({ item, onDismiss }: { item: ToastInput; onDismiss?: (
         <button
           aria-label="Fechar"
           onClick={onDismiss}
-          className="-mr-1 grid size-7 shrink-0 place-items-center rounded-lg text-creme/40 transition-colors hover:bg-creme/10 hover:text-creme"
+          className="-mr-1 grid size-7 shrink-0 place-items-center rounded-lg text-mist-600 transition-colors hover:bg-white/[0.06] hover:text-ice"
         >
           <X className="size-4" />
         </button>

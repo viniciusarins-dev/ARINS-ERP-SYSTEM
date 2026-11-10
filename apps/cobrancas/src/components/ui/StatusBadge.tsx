@@ -1,43 +1,26 @@
 import { cn } from "@/lib/cn";
 import { statusLabel, statusShortLabel, type FinancialStatus } from "@/types/status";
 
-const styles: Record<FinancialStatus, { pill: string; led: string }> = {
-  pago: {
-    pill: "bg-oliva/30 text-oliva-700 border-oliva-700/40",
-    led: "bg-[radial-gradient(circle_at_35%_30%,#e9f1d2,#a6b87a_55%,#5d6b35)]",
-  },
-  em_dia: {
-    pill: "bg-creme-300/70 text-cafe border-cafe/30",
-    led: "bg-[radial-gradient(circle_at_35%_30%,#d8c3b6,#8a6a57_55%,#493126)]",
-  },
-  proximo: {
-    pill: "bg-laranja/15 text-laranja-700 border-laranja/50",
-    led: "bg-[radial-gradient(circle_at_35%_30%,#ffd9c2,#d66b35_55%,#96421e)] animate-led-pulse",
-  },
-  atrasado: {
-    pill: "bg-noite text-creme border-noite",
-    led: "bg-[radial-gradient(circle_at_35%_30%,#ffd9c2,#d66b35_55%,#96421e)] animate-led-blink shadow-[0_0_8px_#d66b35]",
-  },
+const styles: Record<FinancialStatus, { pill: string; dot: string }> = {
+  pago: { pill: "border-success/35 bg-success/10 text-success", dot: "bg-success shadow-[0_0_8px_#3ddc97]" },
+  em_dia: { pill: "border-cyan/30 bg-cyan/[0.08] text-cyan-300", dot: "bg-cyan shadow-[0_0_8px_#35ddfb]" },
+  proximo: { pill: "border-warning/40 bg-warning/10 text-warning", dot: "bg-warning shadow-[0_0_8px_#f5b544] animate-pulse-dot" },
+  atrasado: { pill: "border-danger/40 bg-danger/10 text-[#ff8f9a]", dot: "bg-danger shadow-[0_0_8px_#ff5d6c] animate-pulse-dot" },
 };
 
-type StatusBadgeProps = {
-  status: FinancialStatus;
-  short?: boolean;
-  className?: string;
-};
+type StatusBadgeProps = { status: FinancialStatus; short?: boolean; className?: string };
 
-/** Pílula com "LED" esférico — cada situação tem cor e comportamento próprios. */
 export function StatusBadge({ status, short, className }: StatusBadgeProps) {
   const s = styles[status];
   return (
     <span
       className={cn(
-        "inline-flex h-6 items-center gap-1.5 rounded-chip border pl-1.5 pr-2.5 font-mono text-[10.5px] font-semibold uppercase tracking-[0.08em]",
+        "inline-flex h-6 items-center gap-1.5 whitespace-nowrap rounded-full border px-2.5 text-[11.5px] font-semibold",
         s.pill,
         className,
       )}
     >
-      <span className={cn("size-2.5 rounded-full ring-1 ring-noite/30", s.led)} />
+      <span className={cn("size-1.5 rounded-full", s.dot)} />
       {short ? statusShortLabel[status] : statusLabel[status]}
     </span>
   );

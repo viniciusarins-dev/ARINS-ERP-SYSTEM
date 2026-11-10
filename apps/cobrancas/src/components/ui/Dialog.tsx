@@ -7,6 +7,7 @@ type DialogProps = {
   open: boolean;
   onClose: () => void;
   title: string;
+  /** mantido por compatibilidade; não é exibido */
   code?: string;
   children: ReactNode;
   footer?: ReactNode;
@@ -17,7 +18,7 @@ type DialogProps = {
  * Janela modal baseada no <dialog> nativo (foco preso, Esc fecha).
  * No celular abre como "bottom sheet".
  */
-export function Dialog({ open, onClose, title, code, children, footer, className }: DialogProps) {
+export function Dialog({ open, onClose, title, children, footer, className }: DialogProps) {
   const ref = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
@@ -39,30 +40,32 @@ export function Dialog({ open, onClose, title, code, children, footer, className
         if (e.target === ref.current) onClose();
       }}
       className={cn(
-        "m-auto w-full max-w-lg overflow-visible bg-transparent p-3 text-noite backdrop:bg-noite/60 backdrop:backdrop-blur-[2px]",
+        "m-auto w-full max-w-lg overflow-visible bg-transparent p-3 text-ice backdrop:bg-black/70 backdrop:backdrop-blur-sm",
         "max-sm:mb-0 max-sm:max-w-none max-sm:p-2 open:animate-rise",
         className,
       )}
     >
       {open && (
-        <div className="overflow-hidden rounded-panel border-[1.5px] border-noite bg-creme-50 shadow-hard-lg">
-          <header className="flex h-11 items-center gap-3 border-b-[1.5px] border-noite bg-gradient-to-b from-creme-100 to-creme-300/60 pl-4 pr-1.5">
-            <span className="size-1.5 rotate-45 bg-noite" />
-            <h2 className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em]">{title}</h2>
-            <span className="h-px flex-1 bg-noite/15" />
-            {code && <span className="font-pixel text-[10px] text-cafe-300">{code}</span>}
+        <div className="glass-gold overflow-hidden rounded-2xl">
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-gold-300 to-transparent"
+          />
+          <header className="flex h-14 items-center gap-3 border-b border-white/[0.06] pl-5 pr-2">
+            <span className="size-1.5 rotate-45 bg-gold shadow-[0_0_8px_rgba(217,164,65,0.8)]" />
+            <h2 className="text-[15px] font-semibold">{title}</h2>
             <button
               type="button"
               aria-label="Fechar"
               onClick={onClose}
-              className="grid size-8 place-items-center rounded-lg text-cafe transition-colors hover:bg-noite/10"
+              className="ml-auto grid size-9 place-items-center rounded-lg text-mist transition-colors hover:bg-white/[0.06] hover:text-ice"
             >
               <X className="size-4" />
             </button>
           </header>
-          <div className="max-h-[70dvh] overflow-y-auto p-4 sm:p-5">{children}</div>
+          <div className="max-h-[72dvh] overflow-y-auto p-5">{children}</div>
           {footer && (
-            <footer className="flex flex-wrap justify-end gap-2 border-t-[1.5px] border-noite/10 bg-creme-100 px-4 py-3 sm:px-5">
+            <footer className="flex flex-wrap justify-end gap-2 border-t border-white/[0.06] px-5 py-3">
               {footer}
             </footer>
           )}

@@ -7,7 +7,7 @@ import { Panel } from "@/components/ui/Panel";
 export function MisconfiguredPage() {
   return (
     <div className="grid min-h-dvh place-items-center p-5">
-      <Panel title="Configuração" code="env" className="w-full max-w-lg">
+      <Panel title="Configuração" className="w-full max-w-lg">
         <EmptyState
           icon={<ServerCrash />}
           title="Supabase não configurado"
