@@ -5,7 +5,7 @@
 export const brand = {
   name: "Parcela",
   suffix: "OS",
-  fullName: "Parcela OS",
+  fullName: "ARMAG Cobranças",
   tagline: "Seu painel pessoal de cobranças",
   version: "v0.1",
 } as const;
