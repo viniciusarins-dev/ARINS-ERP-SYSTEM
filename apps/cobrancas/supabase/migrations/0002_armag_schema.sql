@@ -16,14 +16,18 @@
 -- ---------------------------------------------------------------------
 -- Remove o esquema anterior
 -- ---------------------------------------------------------------------
-drop function if exists public.register_payment(uuid, date);
-drop function if exists public.update_client_with_project(uuid, text, text, text, bigint, bigint, text, integer, date, jsonb);
-drop function if exists public.create_client_with_project(text, text, text, bigint, bigint, text, integer, date, jsonb);
-drop function if exists public._write_schedule(uuid, bigint, jsonb);
-drop table if exists public.payments;
-drop table if exists public.installments;
-drop table if exists public.projects;
-drop table if exists public.clients;
+-- Sem operações destrutivas: as tabelas e funções antigas (vazias) são movidas
+-- para o schema "legacy", fora da API, e podem ser apagadas depois com segurança.
+create schema if not exists legacy;
+revoke all on schema legacy from public, anon, authenticated;
+alter table if exists public.payments     set schema legacy;
+alter table if exists public.installments set schema legacy;
+alter table if exists public.projects     set schema legacy;
+alter table if exists public.clients      set schema legacy;
+alter function public.register_payment(uuid, date) set schema legacy;
+alter function public.update_client_with_project(uuid, text, text, text, bigint, bigint, text, integer, date, jsonb) set schema legacy;
+alter function public.create_client_with_project(text, text, text, bigint, bigint, text, integer, date, jsonb) set schema legacy;
+alter function public._write_schedule(uuid, bigint, jsonb) set schema legacy;
 
 -- ---------------------------------------------------------------------
 -- Empresa e usuários
