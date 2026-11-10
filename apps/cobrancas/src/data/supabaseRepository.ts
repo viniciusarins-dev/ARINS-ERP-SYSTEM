@@ -1,7 +1,7 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
 
 import type { ISODate } from "@/domain/dates";
 import type { PaymentPlan } from "@/domain/schedule";
+import type { ArmagClient } from "@/lib/supabase";
 
 import { RepoError, type ClientInput, type Repository, type Snapshot } from "./types";
 import { assertValidClientInput } from "./validate";
@@ -33,7 +33,7 @@ function rpcArgs(input: ClientInput) {
   };
 }
 
-export function createSupabaseRepository(sb: SupabaseClient): Repository {
+export function createSupabaseRepository(sb: ArmagClient): Repository {
   async function run<T>(p: PromiseLike<{ data: T; error: { code?: string; message: string } | null }>): Promise<T> {
     const { data, error } = await p;
     if (error) throw toRepoError(error);
@@ -44,6 +44,11 @@ export function createSupabaseRepository(sb: SupabaseClient): Repository {
     mode: "supabase",
 
     async load(): Promise<Snapshot> {
+      // Contas de login são compartilhadas com o ERP: só membros do ARMAG acessam.
+      const member = await run(sb.rpc("is_member"));
+      if (member !== true) {
+        throw new RepoError("forbidden", "Sua conta não tem acesso ao ARMAG Cobranças. Fale com o administrador.");
+      }
       const [clients, projects, installments, payments] = await Promise.all([
         run(sb.from("clients").select("id, full_name, whatsapp, created_at")),
         run(

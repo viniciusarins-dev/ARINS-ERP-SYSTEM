@@ -65,7 +65,7 @@ export type ClientInput = {
   schedule: ScheduleInput[];
 };
 
-export type RepoErrorCode = "already_paid" | "locked_financials" | "not_found" | "invalid" | "unknown";
+export type RepoErrorCode = "already_paid" | "locked_financials" | "not_found" | "invalid" | "forbidden" | "unknown";
 
 export class RepoError extends Error {
   constructor(

@@ -20,7 +20,20 @@ npm test --workspace apps/cobrancas        # testes das regras (parcelas, status
 npm run build --workspace apps/cobrancas   # typecheck + build
 ```
 
-## Configurar o Supabase
+## Banco atual: projeto Supabase "Arins-ERP" (schema `armag`)
+
+O ARMAG divide o projeto Supabase com o ERP, mas vive no schema próprio `armag`
+(migration `supabase/migrations/0003_armag_schema_on_arins_erp.sql`). Requisitos:
+
+1. **Settings → API → Exposed schemas**: incluir `armag` (além de `public`).
+2. Variáveis do app: `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` e
+   `VITE_SUPABASE_DB_SCHEMA=armag`.
+3. Acesso: só usuários listados em `armag.members` usam o ARMAG — contas do ERP não
+   enxergam nada do ARMAG e vice-versa.
+
+As migrations 0001/0002 são do projeto avulso anterior (histórico).
+
+## Configurar o Supabase (projeto avulso — histórico)
 
 1. Crie um projeto novo em supabase.com (separado do ERP).
 2. **SQL Editor** → cole e execute `supabase/migrations/0001_billing_schema.sql`.

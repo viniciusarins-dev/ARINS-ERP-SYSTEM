@@ -15,4 +15,9 @@ export const backendMode: "supabase" | "local" | "misconfigured" = forceLocal
       ? "local"
       : "misconfigured";
 
-export const supabaseConfig = { url: url ?? "", anonKey: anonKey ?? "" };
+export const supabaseConfig = {
+  url: url ?? "",
+  anonKey: anonKey ?? "",
+  /** Schema do ARMAG no banco (compartilhado com o ERP no projeto Arins-ERP). */
+  schema: (import.meta.env.VITE_SUPABASE_DB_SCHEMA as string | undefined) || "armag",
+};
