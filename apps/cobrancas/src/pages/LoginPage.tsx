@@ -1,8 +1,9 @@
 import { ArrowRight, BarChart3, Eye, EyeOff, Lock, Mail, ReceiptText, ShieldCheck, Wallet } from "lucide-react";
-import { useId, useState, type FormEvent, type ReactNode } from "react";
+import { useId, useState, type FormEvent } from "react";
 import { Navigate } from "react-router-dom";
 
 import { useAuth } from "@/auth/AuthProvider";
+import { Backdrop, DarkField, Feature, FormError, GlassCard, GoldButton, inputClass } from "@/components/armag/AuthParts";
 import { usePageTitle } from "@/components/layout/PageHeader";
 import { cn } from "@/lib/cn";
 
@@ -75,17 +76,7 @@ export function LoginPage() {
 
         {/* Formulário */}
         <section className="mx-auto w-full max-w-[420px]">
-          <div className="glass-gold rounded-[28px] p-7 sm:p-9">
-            {/* filete de luz no topo do card */}
-            <span
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-x-10 -top-px h-px bg-gradient-to-r from-transparent via-gold-300 to-transparent"
-            />
-            <span
-              aria-hidden="true"
-              className="pointer-events-none absolute -bottom-px left-1/2 h-px w-1/2 -translate-x-1/2 bg-gradient-to-r from-transparent via-cyan/70 to-transparent"
-            />
-
+          <GlassCard>
             <header className="mb-8">
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan">Área restrita</p>
               <h2 className="mt-2 text-[28px] font-semibold tracking-[-0.02em]">
@@ -149,44 +140,12 @@ export function LoginPage() {
                 )}
               </DarkField>
 
-              {error && (
-                <p
-                  id={errorId}
-                  role="alert"
-                  className="flex items-center gap-2 rounded-xl border border-danger/30 bg-danger/10 px-3.5 py-2.5 text-sm text-[#ffb3ba]"
-                >
-                  <span className="size-1.5 shrink-0 rounded-full bg-danger shadow-[0_0_8px_#ff5d6c]" />
-                  {error}
-                </p>
-              )}
+              {error && <FormError id={errorId}>{error}</FormError>}
 
-              <button
-                type="submit"
-                disabled={loading}
-                className={cn(
-                  "btn-gold group relative mt-1 flex h-12 w-full items-center justify-center gap-2 overflow-hidden rounded-xl text-[15px] font-bold tracking-wide",
-                  "transition-[transform,filter,box-shadow] duration-200 hover:brightness-110 hover:shadow-[0_14px_40px_-12px_rgba(217,164,65,0.75)]",
-                  "active:translate-y-px focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan",
-                  "disabled:cursor-wait disabled:opacity-80",
-                )}
-              >
-                {/* reflexo que atravessa no hover */}
-                <span
-                  aria-hidden="true"
-                  className="pointer-events-none absolute inset-y-0 -left-full w-1/3 -skew-x-12 bg-gradient-to-r from-transparent via-white/50 to-transparent transition-[left] duration-700 group-hover:left-[120%]"
-                />
-                {loading ? (
-                  <>
-                    <span className="size-4 animate-spin rounded-full border-2 border-ink/80 border-r-transparent" />
-                    Entrando…
-                  </>
-                ) : (
-                  <>
-                    Entrar
-                    <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" strokeWidth={2.4} />
-                  </>
-                )}
-              </button>
+              <GoldButton loading={loading} loadingLabel="Entrando…">
+                Entrar
+                <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" strokeWidth={2.4} />
+              </GoldButton>
             </form>
 
             <div className="mt-8 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t border-white/5 pt-5 text-xs text-mist-600">
@@ -196,82 +155,13 @@ export function LoginPage() {
               </span>
               <span className="whitespace-nowrap">Somente usuários autorizados</span>
             </div>
-          </div>
+          </GlassCard>
 
           <p className="mt-6 text-center text-xs text-mist-600">
             © {new Date().getFullYear()} ARMAG · Gestão inteligente. Resultados reais.
           </p>
         </section>
       </div>
-    </div>
-  );
-}
-
-const inputClass =
-  "h-12 w-full rounded-xl border border-white/10 bg-white/[0.035] pl-11 pr-4 text-[15px] text-ice placeholder:text-mist-600 " +
-  "shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] transition-[border-color,box-shadow,background-color] duration-200 " +
-  "hover:border-white/20 focus:border-cyan/70 focus:bg-white/[0.05] focus:outline-none focus:shadow-[0_0_0_4px_rgba(53,221,251,0.12),0_0_24px_-6px_rgba(53,221,251,0.5)] " +
-  "aria-[invalid=true]:border-danger/60";
-
-function DarkField({
-  label,
-  icon,
-  trailing,
-  children,
-}: {
-  label: string;
-  icon: ReactNode;
-  trailing?: ReactNode;
-  children: (id: string) => ReactNode;
-}) {
-  const id = useId();
-  return (
-    <div className="flex flex-col gap-2">
-      <label htmlFor={id} className="text-[13px] font-medium text-mist">
-        {label}
-      </label>
-      <div className="group/field relative">
-        <span className="pointer-events-none absolute inset-y-0 left-0 grid w-11 place-items-center text-mist-600 transition-colors group-focus-within/field:text-cyan [&_svg]:size-[18px]">
-          {icon}
-        </span>
-        {children(id)}
-        {trailing && <span className="absolute inset-y-0 right-1.5 grid place-items-center">{trailing}</span>}
-      </div>
-    </div>
-  );
-}
-
-function Feature({ icon, text }: { icon: ReactNode; text: string }) {
-  return (
-    <li className="flex items-center gap-3 text-sm text-ice/85">
-      <span className="grid size-9 place-items-center rounded-xl border border-gold/25 bg-gold/[0.06] text-gold [&_svg]:size-[18px]">
-        {icon}
-      </span>
-      {text}
-    </li>
-  );
-}
-
-/** Fundo: brilhos dourado/ciano, feixes diagonais e grade sutil. */
-function Backdrop() {
-  return (
-    <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-      <div className="absolute -right-40 -top-40 size-[640px] rounded-full bg-[radial-gradient(circle,rgba(217,164,65,0.18),transparent_62%)]" />
-      <div className="absolute -bottom-56 -left-40 size-[620px] rounded-full bg-[radial-gradient(circle,rgba(53,221,251,0.12),transparent_62%)]" />
-      <div
-        className="absolute inset-0 opacity-[0.35]"
-        style={{
-          backgroundImage:
-            "linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)",
-          backgroundSize: "64px 64px",
-          maskImage: "radial-gradient(ellipse at center, black 30%, transparent 75%)",
-          WebkitMaskImage: "radial-gradient(ellipse at center, black 30%, transparent 75%)",
-        }}
-      />
-      {/* feixes de luz diagonais (só em telas grandes, para não cruzar o formulário) */}
-      <div className="absolute -right-24 top-0 hidden h-[140%] lg:block w-px rotate-[32deg] origin-top bg-gradient-to-b from-transparent via-gold/50 to-transparent" />
-      <div className="absolute right-24 top-0 hidden h-[140%] lg:block w-[2px] rotate-[32deg] origin-top bg-gradient-to-b from-transparent via-gold/25 to-transparent blur-[1px]" />
-      <div className="absolute -left-10 bottom-0 hidden h-[90%] lg:block w-px -rotate-[32deg] origin-bottom bg-gradient-to-t from-transparent via-cyan/45 to-transparent" />
     </div>
   );
 }

@@ -16,6 +16,7 @@ import { LoginPage } from "@/pages/LoginPage";
 import { MisconfiguredPage } from "@/pages/MisconfiguredPage";
 import { NewClientPage } from "@/pages/NewClientPage";
 import { NotFound } from "@/pages/NotFound";
+import { SetPasswordPage } from "@/pages/SetPasswordPage";
 
 // Guia de identidade visual: só existe em desenvolvimento.
 const StyleGuide = import.meta.env.DEV
@@ -23,10 +24,12 @@ const StyleGuide = import.meta.env.DEV
   : null;
 
 function RequireAuth({ children }: { children: ReactNode }) {
-  const { status } = useAuth();
+  const { status, mustChangePassword } = useAuth();
   const location = useLocation();
   if (status === "loading") return null;
   if (status === "signedOut") return <Navigate to="/entrar" replace state={{ from: location }} />;
+  // Senha provisória: nada do sistema fica acessível antes da troca.
+  if (mustChangePassword) return <Navigate to="/definir-senha" replace />;
   return <>{children}</>;
 }
 
@@ -54,6 +57,7 @@ export default function App() {
         <AuthProvider>
           <Routes>
             <Route path="/entrar" element={<LoginPage />} />
+            <Route path="/definir-senha" element={<SetPasswordPage />} />
             {StyleGuide && (
               <Route
                 path="/identidade"

@@ -1,4 +1,4 @@
-import { HardDrive, LayoutDashboard, LogOut, Palette, Plus, UserPlus, Users } from "lucide-react";
+import { HardDrive, KeyRound, LayoutDashboard, LogOut, Palette, Plus, UserPlus, Users } from "lucide-react";
 import type { ReactNode } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 
@@ -77,6 +77,16 @@ export function AppShell() {
                   {brand.fullName} {brand.version}
                 </p>
               </div>
+              {!local && (
+                <NavLink
+                  to="/definir-senha"
+                  aria-label="Alterar senha"
+                  title="Alterar senha"
+                  className="grid size-8 place-items-center rounded-lg text-creme/50 transition-colors hover:bg-creme/10 hover:text-laranja-300"
+                >
+                  <KeyRound className="size-4" />
+                </NavLink>
+              )}
               {!local && (
                 <button
                   aria-label="Sair"
