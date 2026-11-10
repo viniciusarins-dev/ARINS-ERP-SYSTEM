@@ -29,7 +29,8 @@ O ARMAG divide o projeto Supabase com o ERP, mas vive no schema próprio `armag`
 2. Variáveis do app: `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` e
    `VITE_SUPABASE_DB_SCHEMA=armag`.
 3. Acesso: só usuários listados em `armag.members` usam o ARMAG — contas do ERP não
-   enxergam nada do ARMAG e vice-versa.
+   enxergam nada do ARMAG e vice-versa. Todos os membros compartilham a mesma carteira
+   (migration `0004_armag_shared_records.sql`); `owner_id` indica quem cadastrou.
 
 As migrations 0001/0002 são do projeto avulso anterior (histórico).
 
