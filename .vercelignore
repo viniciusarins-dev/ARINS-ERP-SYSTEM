@@ -1,0 +1,9 @@
+# Nunca enviar arquivos de ambiente nem artefatos locais no deploy pela CLI
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.local
+node_modules
+**/node_modules
+**/dist
