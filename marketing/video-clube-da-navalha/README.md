@@ -22,6 +22,17 @@ Vídeo vertical 9:16 (1080×1920, 30 fps, ~55 s) para prospecção de donos de b
 - **Regravar telas do site** (ex.: endereço novo): `node scripts/1-capturar.cjs` (ou só `site`/`agendamento`).
 - **Prévia rápida de quadros:** `node scripts/4-renderizar.cjs --previa 3,18,40` (PNG em `previa/`).
 
+## Versão curta (primeiro contato, 23 s)
+Mais agressiva: gancho → virada → demonstração relâmpago (telas reais aceleradas ~2×) → "sem ligação, sem mensagem, sem espera" → chama no WhatsApp.
+Arquivos próprios: `roteiro/narracao-curta.json`, `roteiro/timeline-curta.json`, `composicao/curta.html` e `composicao/curta.js`
+(usa as mesmas gravações de `clips/`). Para gerar:
+```
+VERSAO=curta python3 scripts/2-narracao.py
+VERSAO=curta python3 scripts/3-audio.py
+node scripts/4-renderizar.cjs --versao curta        # → saida/clube-da-navalha-curta.mp4
+```
+"Em menos de um minuto" vem do próprio texto do site.
+
 ## Requisitos
 Node + Playwright (Chromium), Python 3 com `piper-tts`, `numpy`, `scipy`, e FFmpeg.
 Vozes Piper pt_BR (CC0) em `vozes/` ou em `PIPER_VOICES` (baixar de huggingface.co/rhasspy/piper-voices).

@@ -1,6 +1,7 @@
 // 4) Renderiza a composição quadro a quadro e junta com o áudio.
 // Uso: node scripts/4-renderizar.cjs                → vídeo completo em saida/
 //      node scripts/4-renderizar.cjs --previa 1,5,9 → só esses instantes (PNG) em previa/
+//      acrescente --versao curta para a versão curta (primeiro contato)
 const { chromium } = require('playwright');
 const http = require('http');
 const fs = require('fs');
@@ -8,9 +9,14 @@ const path = require('path');
 const { execFileSync } = require('child_process');
 
 const ROOT = path.resolve(__dirname, '..');
-const TL = JSON.parse(fs.readFileSync(path.join(ROOT, 'roteiro', 'timeline.json')));
+const iv = process.argv.indexOf('--versao');
+const VERSAO = iv > -1 ? process.argv[iv + 1] : '';
+const V = VERSAO
+  ? { tl: `timeline-${VERSAO}.json`, page: `${VERSAO}.html`, quadros: `quadros-${VERSAO}`, previa: `previa-${VERSAO}`, audio: `${VERSAO}_mix.wav`, saida: `clube-da-navalha-${VERSAO}.mp4` }
+  : { tl: 'timeline.json', page: 'index.html', quadros: 'quadros', previa: 'previa', audio: 'mix.wav', saida: 'clube-da-navalha-comercial-v2.mp4' };
+const TL = JSON.parse(fs.readFileSync(path.join(ROOT, 'roteiro', V.tl)));
 const FPS = TL.fps;
-const SAIDA = path.join(ROOT, 'saida', 'clube-da-navalha-comercial-v2.mp4');
+const SAIDA = path.join(ROOT, 'saida', V.saida);
 const types = { '.html': 'text/html', '.js': 'text/javascript', '.json': 'application/json', '.jpg': 'image/jpeg', '.png': 'image/png', '.woff2': 'font/woff2' };
 
 function serve() {
@@ -26,7 +32,7 @@ function serve() {
 
 (async () => {
   const srv = await serve();
-  const url = `http://localhost:${srv.address().port}/composicao/index.html`;
+  const url = `http://localhost:${srv.address().port}/composicao/${V.page}`;
   const browser = await chromium.launch();
   const page = await browser.newPage({ viewport: { width: 1080, height: 1920 }, deviceScaleFactor: 1 });
   page.on('pageerror', (e) => console.error('ERRO NA PÁGINA:', e.message));
@@ -36,7 +42,7 @@ function serve() {
 
   const previa = process.argv.indexOf('--previa');
   if (previa > -1) {
-    const dir = path.join(ROOT, 'previa');
+    const dir = path.join(ROOT, V.previa);
     fs.mkdirSync(dir, { recursive: true });
     for (const t of process.argv[previa + 1].split(',').map(Number)) {
       await page.evaluate((t) => window.renderFrame(t), t);
@@ -44,7 +50,7 @@ function serve() {
     }
     console.log('prévias em', dir);
   } else {
-    const dir = path.join(ROOT, 'quadros');
+    const dir = path.join(ROOT, V.quadros);
     fs.rmSync(dir, { recursive: true, force: true });
     fs.mkdirSync(dir, { recursive: true });
     const total = Math.round(TL.duracao * FPS);
@@ -57,7 +63,7 @@ function serve() {
     }
     fs.mkdirSync(path.dirname(SAIDA), { recursive: true });
     execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-framerate', String(FPS), '-i', path.join(dir, '%05d.jpg'),
-      '-i', path.join(ROOT, 'audio', 'mix.wav'),
+      '-i', path.join(ROOT, 'audio', V.audio),
       '-c:v', 'libx264', '-profile:v', 'high', '-level', '4.1', '-pix_fmt', 'yuv420p', '-preset', 'slow', '-crf', '19', '-r', String(FPS),
       '-c:a', 'aac', '-b:a', '192k', '-ar', '48000', '-movflags', '+faststart', '-shortest', SAIDA]);
     console.log('vídeo:', SAIDA);

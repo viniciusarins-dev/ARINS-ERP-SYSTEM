@@ -1,6 +1,6 @@
 """3) Trilha sonora + efeitos (sintetizados do zero, livres de direitos) e mixagem final.
-Uso: python3 scripts/3-audio.py
-Saída: audio/musica.wav, audio/efeitos.wav, audio/narracao.wav e audio/mix.wav (-14 LUFS)
+Uso: python3 scripts/3-audio.py            (VERSAO=curta para a versão curta)
+Saída: audio/[versao_]musica.wav, efeitos.wav, narracao.wav e mix.wav (-14 LUFS)
 """
 import json, os, subprocess
 import numpy as np
@@ -9,7 +9,9 @@ from scipy.signal import butter, sosfilt, fftconvolve
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SR = 48000
-T = json.load(open(os.path.join(ROOT, "roteiro", "timeline.json")))
+SUF = f"-{os.environ['VERSAO']}" if os.environ.get("VERSAO") else ""
+PRE = f"{os.environ['VERSAO']}_" if os.environ.get("VERSAO") else ""
+T = json.load(open(os.path.join(ROOT, "roteiro", f"timeline{SUF}.json")))
 DUR = T["duracao"]
 N = int(DUR * SR)
 rng = np.random.default_rng(7)
@@ -120,7 +122,7 @@ def bass(m, sec):
 
 
 # ---------------- música ----------------
-beat = 60 / 100  # 100 BPM
+beat = 60 / T.get("bpm", 100)
 bar = beat * 4
 music = np.zeros(N)
 drums = np.zeros(N)
@@ -141,14 +143,14 @@ tick = hp(rng.standard_normal(int(0.02 * SR)), 3000) * env(int(0.02 * SR), 0.000
 tt = 0.3
 while tt < s1 - 0.3:
     place(drums, tick, tt)
-    tt += 0.6 if tt < 4 else 0.3  # acelera: ansiedade
+    tt += beat if tt < T.get("tique_acelera", 4.0) else beat / 2  # acelera: ansiedade
 # batidas graves tipo "coração" no fim da cena
-for k, tt in enumerate(np.arange(4.2, s1 - 0.4, 0.6)):
+for k, tt in enumerate(np.arange(T.get("batidas_inicio", 4.2), s1 - 0.4, beat)):
     place(drums, lp(kick(), 400) * 0.6, tt)
 
 # Grooves a partir da solução
 g0 = T["cenas"]["solucao"][0]
-end_groove = T["falas"]["c2"] + 2.3
+end_groove = T.get("fim_groove", T["falas"].get("c2", 0) + 2.3)
 t = g0
 i = 0
 while t < end_groove:
@@ -184,7 +186,7 @@ padbus = reverb(padbus, 1.8, 0.3) * pump * 0.55
 drums = reverb(drums, 0.9, 0.12)
 
 # acerto final: kick + prato no fim da fala
-fim = T["falas"]["c2"] + 2.4
+fim = T.get("acerto_final", T["falas"].get("c2", 0) + 2.4)
 crash = hp(rng.standard_normal(int(2.2 * SR)), 5000) * env(int(2.2 * SR), 0.002, 0.7) * 0.35
 place(drums, kick() * 1.2, fim)
 place(drums, crash, fim)
@@ -286,14 +288,14 @@ for tr in T["trechos_gravacao"]:
 # ---------------- narração posicionada ----------------
 vo = np.zeros(N)
 for fid, at in T["falas"].items():
-    sr, x = wavfile.read(os.path.join(ROOT, "audio", f"vo_{fid}.wav"))
+    sr, x = wavfile.read(os.path.join(ROOT, "audio", f"vo_{PRE}{fid}.wav"))
     x = x.astype(np.float32) / 32768.0
     place(vo, x, at)
 
 
 def save(name, x, peak=0.89):
     x = x / (np.max(np.abs(x)) + 1e-9) * peak
-    wavfile.write(os.path.join(ROOT, "audio", name), SR, (x * 32767).astype(np.int16))
+    wavfile.write(os.path.join(ROOT, "audio", PRE + name), SR, (x * 32767).astype(np.int16))
 
 
 save("musica.wav", music)
@@ -301,7 +303,7 @@ save("efeitos.wav", sfx, 0.8)
 save("narracao.wav", vo, 0.95)
 
 # ---------------- mixagem: música abaixa sob a voz (sidechain) ----------------
-A = lambda n: os.path.join(ROOT, "audio", n)
+A = lambda n: os.path.join(ROOT, "audio", PRE + n)
 subprocess.run([
     "ffmpeg", "-y", "-loglevel", "error",
     "-i", A("musica.wav"), "-i", A("narracao.wav"), "-i", A("efeitos.wav"),
@@ -315,4 +317,4 @@ subprocess.run([
     "loudnorm=I=-14:TP=-1.0:LRA=9,aresample=48000[out]",
     "-map", "[out]", "-ac", "2", A("mix.wav"),
 ], check=True)
-print("ok: audio/mix.wav")
+print(f"ok: audio/{PRE}mix.wav")

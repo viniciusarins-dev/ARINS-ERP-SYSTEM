@@ -1,0 +1,12 @@
+{
+  "voz": "jeff",
+  "velocidade": 0.9,
+  "falas": [
+    { "id": "k1", "texto": "Ainda marca horário pelo WhatsApp, no meio do corte?" },
+    { "id": "k2", "texto": "Quantos clientes desistem esperando a sua resposta?" },
+    { "id": "k3", "texto": "Com o Clube da Navalha, o cliente agenda sozinho. Vinte e quatro horas." },
+    { "id": "k4", "texto": "Escolhe o serviço, o barbeiro e o horário livre, em menos de um minuto." },
+    { "id": "k5", "texto": "Sem ligação. Sem mensagem. Sem espera." },
+    { "id": "k6", "texto": "Quer isso na sua barbearia? Chama no WhatsApp." }
+  ]
+}
