@@ -5,7 +5,15 @@ import { assertValidClientInput, financialsChanged } from "./validate";
 
 const STORAGE_KEY = "parcela-os:local:v1";
 
-const empty = (): Snapshot => ({ clients: [], projects: [], installments: [], payments: [], budgets: [] });
+const empty = (): Snapshot => ({
+  clients: [],
+  projects: [],
+  installments: [],
+  payments: [],
+  budgets: [],
+  leads: [],
+  settings: { prospectMessage: null, myName: null },
+});
 
 function read(): Snapshot {
   try {
@@ -136,6 +144,44 @@ export function createLocalRepository(): Repository {
     async deleteBudget(id) {
       const s = read();
       s.budgets = s.budgets.filter((b) => b.id !== id);
+      write(s);
+    },
+
+    async saveLead(input, id) {
+      const s = read();
+      if (id) {
+        const l = s.leads.find((x) => x.id === id);
+        if (!l) throw new RepoError("not_found", "Lead não encontrado.");
+        Object.assign(l, input);
+        write(s);
+        return id;
+      }
+      if (input.sourceRef && s.leads.some((l) => l.sourceRef === input.sourceRef)) {
+        throw new RepoError("duplicate", "Essa empresa já está nos seus leads.");
+      }
+      const newId = uid();
+      s.leads.unshift({ ...input, id: newId, createdAt: now() });
+      write(s);
+      return newId;
+    },
+
+    async updateLead(id, patch) {
+      const s = read();
+      const l = s.leads.find((x) => x.id === id);
+      if (!l) throw new RepoError("not_found", "Lead não encontrado.");
+      Object.assign(l, patch);
+      write(s);
+    },
+
+    async deleteLead(id) {
+      const s = read();
+      s.leads = s.leads.filter((l) => l.id !== id);
+      write(s);
+    },
+
+    async saveSettings(patch) {
+      const s = read();
+      s.settings = { ...s.settings, ...patch };
       write(s);
     },
   };

@@ -15,6 +15,8 @@ const snap: Snapshot = {
   ],
   payments: [{ id: "x", installmentId: "i1", amountCents: 10000, paidAt: "2026-11-03", createdAt: "y" }],
   budgets: [],
+  leads: [],
+  settings: { prospectMessage: null, myName: null },
 };
 
 describe("séries do painel", () => {

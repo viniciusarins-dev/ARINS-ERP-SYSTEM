@@ -3,13 +3,14 @@ import type { ISODate } from "@/domain/dates";
 import type { PaymentPlan } from "@/domain/schedule";
 import type { ArmagClient } from "@/lib/supabase";
 
-import { RepoError, type BudgetInput, type ClientInput, type Repository, type Snapshot } from "./types";
+import { RepoError, type BudgetInput, type ClientInput, type Lead, type LeadInput, type Repository, type Settings, type Snapshot } from "./types";
 import { assertValidClientInput } from "./validate";
 
 type Row = Record<string, unknown>;
 
 function toRepoError(error: { code?: string; message: string }): RepoError {
   const msg = error.message ?? "";
+  if (msg.includes("leads_source_ref_key")) return new RepoError("duplicate", "Essa empresa já está nos seus leads.");
   if (error.code === "23505" || msg.includes("already_paid")) return new RepoError("already_paid", "Essa parcela já está paga.");
   if (msg.includes("locked_financials")) {
     return new RepoError("locked_financials", "Já existem pagamentos registrados; os valores não podem mudar.");
@@ -33,6 +34,38 @@ function rpcArgs(input: ClientInput) {
   };
 }
 
+function leadFromRow(r: Row): Lead {
+  return {
+    id: r.id as string,
+    name: r.name as string,
+    segment: r.segment as Lead["segment"],
+    phone: (r.phone as string | null) ?? null,
+    instagram: (r.instagram as string | null) ?? null,
+    website: (r.website as string | null) ?? null,
+    address: (r.address as string | null) ?? null,
+    city: (r.city as string | null) ?? null,
+    lat: r.lat === null || r.lat === undefined ? null : Number(r.lat),
+    lon: r.lon === null || r.lon === undefined ? null : Number(r.lon),
+    source: r.source as Lead["source"],
+    sourceRef: (r.source_ref as string | null) ?? null,
+    status: r.status as Lead["status"],
+    notes: (r.notes as string | null) ?? null,
+    lastContactAt: (r.last_contact_at as string | null) ?? null,
+    createdAt: r.created_at as string,
+  };
+}
+
+function leadToRow(l: Partial<LeadInput>): Record<string, unknown> {
+  const map: Record<string, string> = {
+    name: "name", segment: "segment", phone: "phone", instagram: "instagram", website: "website", address: "address",
+    city: "city", lat: "lat", lon: "lon", source: "source", sourceRef: "source_ref", status: "status", notes: "notes",
+    lastContactAt: "last_contact_at",
+  };
+  const row: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(l)) if (k in map) row[map[k]] = v;
+  return row;
+}
+
 export function createSupabaseRepository(sb: ArmagClient): Repository {
   async function run<T>(p: PromiseLike<{ data: T; error: { code?: string; message: string } | null }>): Promise<T> {
     const { data, error } = await p;
@@ -49,7 +82,7 @@ export function createSupabaseRepository(sb: ArmagClient): Repository {
       if (member !== true) {
         throw new RepoError("forbidden", "Sua conta não tem acesso ao ARMAG Cobranças. Fale com o administrador.");
       }
-      const [clients, projects, installments, payments, budgets] = await Promise.all([
+      const [clients, projects, installments, payments, budgets, leads, settings] = await Promise.all([
         run(sb.from("clients").select("id, full_name, whatsapp, created_at")),
         run(
           sb
@@ -66,7 +99,10 @@ export function createSupabaseRepository(sb: ArmagClient): Repository {
             )
             .order("created_at", { ascending: false }),
         ),
+        run(sb.from("leads").select("*").order("created_at", { ascending: false })),
+        run(sb.from("settings").select("key, value")),
       ]);
+      const settingsMap = new Map((settings as Row[]).map((r) => [r.key as string, r.value as { text?: string }]));
       return {
         clients: (clients as Row[]).map((r) => ({
           id: r.id as string,
@@ -115,6 +151,11 @@ export function createSupabaseRepository(sb: ArmagClient): Repository {
           createdAt: r.created_at as string,
           updatedAt: r.updated_at as string,
         })),
+        leads: (leads as Row[]).map(leadFromRow),
+        settings: {
+          prospectMessage: settingsMap.get("prospect_message")?.text ?? null,
+          myName: settingsMap.get("my_name")?.text ?? null,
+        },
       };
     },
 
@@ -164,6 +205,32 @@ export function createSupabaseRepository(sb: ArmagClient): Repository {
 
     async deleteBudget(id) {
       await run(sb.from("budgets").delete().eq("id", id));
+    },
+
+    async saveLead(input: LeadInput, id?: string) {
+      const row = leadToRow(input);
+      if (id) {
+        await run(sb.from("leads").update(row).eq("id", id));
+        return id;
+      }
+      const data = (await run(sb.from("leads").insert(row).select("id").single())) as { id: string };
+      return data.id;
+    },
+
+    async updateLead(id, patch) {
+      await run(sb.from("leads").update(leadToRow(patch)).eq("id", id));
+    },
+
+    async deleteLead(id) {
+      await run(sb.from("leads").delete().eq("id", id));
+    },
+
+    async saveSettings(patch: Partial<Settings>) {
+      const rows = [
+        ...(patch.prospectMessage !== undefined ? [{ key: "prospect_message", value: { text: patch.prospectMessage } }] : []),
+        ...(patch.myName !== undefined ? [{ key: "my_name", value: { text: patch.myName } }] : []),
+      ];
+      if (rows.length) await run(sb.from("settings").upsert(rows));
     },
   };
 }

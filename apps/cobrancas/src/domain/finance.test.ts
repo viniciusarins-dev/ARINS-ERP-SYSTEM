@@ -20,6 +20,8 @@ const snapshot: Snapshot = {
   ],
   payments: [{ id: "pay1", installmentId: "i1", amountCents: 50000, paidAt: "2026-10-09", createdAt: "y" }],
   budgets: [],
+  leads: [],
+  settings: { prospectMessage: null, myName: null },
 };
 
 describe("finance", () => {

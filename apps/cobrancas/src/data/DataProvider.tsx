@@ -7,7 +7,17 @@ import { supabase } from "@/lib/supabase";
 
 import { createLocalRepository } from "./localRepository";
 import { createSupabaseRepository } from "./supabaseRepository";
-import { RepoError, type Budget, type BudgetInput, type ClientInput, type Repository, type Snapshot } from "./types";
+import {
+  RepoError,
+  type Budget,
+  type BudgetInput,
+  type ClientInput,
+  type Lead,
+  type LeadInput,
+  type Repository,
+  type Settings,
+  type Snapshot,
+} from "./types";
 
 type DataState = {
   mode: Repository["mode"];
@@ -19,6 +29,12 @@ type DataState = {
   budgets: Budget[];
   saveBudget: (input: BudgetInput, id?: string) => Promise<string>;
   deleteBudget: (id: string) => Promise<void>;
+  leads: Lead[];
+  settings: Settings;
+  saveLead: (input: LeadInput, id?: string) => Promise<string>;
+  updateLead: (id: string, patch: Partial<LeadInput>) => Promise<void>;
+  deleteLead: (id: string) => Promise<void>;
+  saveSettings: (patch: Partial<Settings>) => Promise<void>;
   reload: () => Promise<void>;
   createClient: (input: ClientInput) => Promise<string>;
   updateClient: (clientId: string, input: ClientInput) => Promise<void>;
@@ -29,7 +45,15 @@ type DataState = {
 
 const DataContext = createContext<DataState | null>(null);
 
-const emptySnapshot: Snapshot = { clients: [], projects: [], installments: [], payments: [], budgets: [] };
+const emptySnapshot: Snapshot = {
+  clients: [],
+  projects: [],
+  installments: [],
+  payments: [],
+  budgets: [],
+  leads: [],
+  settings: { prospectMessage: null, myName: null },
+};
 
 export function DataProvider({ children }: { children: ReactNode }) {
   const repo = useMemo<Repository>(
@@ -81,6 +105,25 @@ export function DataProvider({ children }: { children: ReactNode }) {
         await repo.deleteBudget(id);
         await reload();
       },
+      leads: snapshot.leads,
+      settings: snapshot.settings,
+      async saveLead(input, id) {
+        const savedId = await repo.saveLead(input, id);
+        await reload();
+        return savedId;
+      },
+      async updateLead(id, patch) {
+        await repo.updateLead(id, patch);
+        await reload();
+      },
+      async deleteLead(id) {
+        await repo.deleteLead(id);
+        await reload();
+      },
+      async saveSettings(patch) {
+        await repo.saveSettings(patch);
+        await reload();
+      },
       reload,
       async createClient(input) {
         const id = await repo.createClient(input);
@@ -112,7 +155,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
         await reload();
       },
     }),
-    [repo, today, loading, error, views, kpis, snapshot.budgets, reload],
+    [repo, today, loading, error, views, kpis, snapshot.budgets, snapshot.leads, snapshot.settings, reload],
   );
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;

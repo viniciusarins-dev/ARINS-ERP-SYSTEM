@@ -1,4 +1,4 @@
-import { Bell, Calculator, HardDrive, KeyRound, LayoutDashboard, LogOut, Plus, Search, UserPlus, Users, X } from "lucide-react";
+import { Bell, Calculator, HardDrive, KeyRound, LayoutDashboard, LogOut, Plus, Radar, Search, UserPlus, Users, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
 
@@ -18,6 +18,7 @@ const nav: NavItem[] = [
   { to: "/clientes", label: "Clientes", icon: <Users />, end: true },
   { to: "/clientes/novo", label: "Novo cliente", icon: <UserPlus /> },
   { to: "/orcamentos", label: "Orçamentos", icon: <Calculator /> },
+  { to: "/prospeccao", label: "Prospecção", icon: <Radar /> },
 ];
 
 /** Remove acentos para busca: "joao" encontra "João". */
@@ -385,7 +386,7 @@ function MobileNav() {
   return (
     <nav
       aria-label="Principal"
-      className="fixed inset-x-3 bottom-3 z-30 grid h-16 grid-cols-4 items-center rounded-2xl border border-white/10 bg-ink-900/95 px-2 shadow-[0_-10px_40px_-10px_rgba(0,0,0,0.9)] backdrop-blur-xl lg:hidden"
+      className="fixed inset-x-3 bottom-3 z-30 grid h-16 grid-cols-5 items-center rounded-2xl border border-white/10 bg-ink-900/95 px-2 shadow-[0_-10px_40px_-10px_rgba(0,0,0,0.9)] backdrop-blur-xl lg:hidden"
     >
       <DockLink to="/" end icon={<LayoutDashboard />} label="Painel" />
       <DockLink to="/clientes" end icon={<Users />} label="Clientes" />
@@ -397,6 +398,7 @@ function MobileNav() {
         <Plus className="size-6" strokeWidth={2.4} />
       </NavLink>
       <DockLink to="/orcamentos" icon={<Calculator />} label="Orçamentos" />
+      <DockLink to="/prospeccao" icon={<Radar />} label="Prospecção" />
     </nav>
   );
 }
@@ -408,7 +410,7 @@ function DockLink({ to, end, icon, label }: { to: string; end?: boolean; icon: R
       end={end}
       className={({ isActive }) =>
         cn(
-          "mx-auto flex h-12 w-20 flex-col items-center justify-center gap-1 rounded-xl text-[10px] font-semibold",
+          "mx-auto flex h-12 w-full max-w-20 flex-col items-center justify-center gap-1 rounded-xl text-[9.5px] font-semibold",
           "[&_svg]:size-5 [&_svg]:stroke-[1.9]",
           isActive ? "bg-gold/10 text-gold" : "text-mist",
         )

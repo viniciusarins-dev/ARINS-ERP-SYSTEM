@@ -18,6 +18,7 @@ import { LoginPage } from "@/pages/LoginPage";
 import { MisconfiguredPage } from "@/pages/MisconfiguredPage";
 import { NewClientPage } from "@/pages/NewClientPage";
 import { NotFound } from "@/pages/NotFound";
+import { ProspectingPage } from "@/pages/ProspectingPage";
 import { SetPasswordPage } from "@/pages/SetPasswordPage";
 
 function RequireAuth({ children }: { children: ReactNode }) {
@@ -64,6 +65,7 @@ export default function App() {
               <Route path="orcamentos" element={<BudgetsPage />} />
               <Route path="orcamentos/novo" element={<BudgetEditorPage />} />
               <Route path="orcamentos/:id" element={<BudgetEditorPage />} />
+              <Route path="prospeccao" element={<ProspectingPage />} />
               <Route path="*" element={<NotFound />} />
             </Route>
           </Routes>
