@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<title>Clube da Navalha — vídeo comercial v2</title>
+<style>
+@font-face { font-family: "Anton"; src: url(fonts/anton-latin-400-normal.woff2) format("woff2"); font-weight: 400; }
+@font-face { font-family: "Montserrat"; src: url(fonts/montserrat-latin-500-normal.woff2) format("woff2"); font-weight: 500; }
+@font-face { font-family: "Montserrat"; src: url(fonts/montserrat-latin-600-normal.woff2) format("woff2"); font-weight: 600; }
+@font-face { font-family: "Montserrat"; src: url(fonts/montserrat-latin-700-normal.woff2) format("woff2"); font-weight: 700; }
+@font-face { font-family: "Montserrat"; src: url(fonts/montserrat-latin-800-normal.woff2) format("woff2"); font-weight: 800; }
+@font-face { font-family: "Montserrat"; src: url(fonts/montserrat-latin-900-normal.woff2) format("woff2"); font-weight: 900; }
+@font-face { font-family: "Inter"; src: url(fonts/inter-latin-400-normal.woff2) format("woff2"); font-weight: 400; }
+@font-face { font-family: "Inter"; src: url(fonts/inter-latin-500-normal.woff2) format("woff2"); font-weight: 500; }
+@font-face { font-family: "Inter"; src: url(fonts/inter-latin-600-normal.woff2) format("woff2"); font-weight: 600; }
+
+:root { --amarelo: #ffc531; --vermelho: #ff4d57; --branco: #f7f7f5; --cinza: #a3a3a3; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 1080px; height: 1920px; overflow: hidden; background: #000; }
+#stage { position: relative; width: 1080px; height: 1920px; overflow: hidden; background: #070707; color: var(--branco);
+  font-family: Inter, sans-serif; -webkit-font-smoothing: antialiased; }
+.layer { position: absolute; inset: 0; will-change: transform, opacity; }
+
+/* fundo */
+#bg { background:
+  radial-gradient(900px 900px at 85% 8%, rgba(255,197,49,.10), transparent 60%),
+  radial-gradient(800px 800px at 0% 95%, rgba(255,255,255,.05), transparent 60%), #070707; }
+#grain { opacity: .07; mix-blend-mode: overlay; pointer-events: none; }
+#vignette { background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,.55) 100%); pointer-events: none; }
+#flash { background: #fff; opacity: 0; }
+#tint { background: rgba(255, 50, 60, .0); }
+
+/* tipografia publicitária */
+.titulo { font-family: Anton, Impact, sans-serif; text-transform: uppercase; line-height: 1.02; letter-spacing: .005em; }
+.chamada { font-family: Montserrat, sans-serif; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; }
+.apoio { font-family: Montserrat, sans-serif; font-weight: 600; }
+.hl { color: var(--amarelo); }
+.hl-red { color: var(--vermelho); }
+.w { display: inline-block; will-change: transform, opacity; }
+
+/* bloco de texto centralizado em área segura (topo 230px / base 330px livres) */
+.txt { position: absolute; left: 70px; right: 70px; text-align: center; }
+.chip { display: inline-flex; align-items: center; gap: 14px; padding: 14px 26px; border-radius: 999px;
+  background: var(--amarelo); color: #0a0a0a; font-size: 30px; }
+.chip i { width: 12px; height: 12px; border-radius: 50%; background: #0a0a0a; display: inline-block; }
+.pill-out { display: inline-block; padding: 18px 32px; border-radius: 999px; border: 3px solid rgba(255,255,255,.85); font-size: 40px; }
+
+/* celular */
+.phone { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+.phone .frame { position: absolute; left: -26px; top: -26px; border-radius: 96px; background: linear-gradient(160deg,#2b2b2b,#0d0d0d 40%,#1a1a1a);
+  box-shadow: 0 0 0 3px #3a3a3a inset, 0 60px 140px rgba(0,0,0,.75), 0 0 0 2px #000; }
+.phone .screen { position: absolute; left: 0; top: 0; overflow: hidden; border-radius: 72px; background: #0a0a0a; }
+.phone .screen img.clip { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+.phone .notch { position: absolute; top: 18px; left: 50%; width: 170px; height: 46px; margin-left: -85px; border-radius: 30px; background: #000; z-index: 5; }
+
+/* destaques nos toques */
+.ring { position: absolute; border: 7px solid var(--amarelo); border-radius: 26px; box-shadow: 0 0 0 6px rgba(255,197,49,.25), 0 0 40px rgba(255,197,49,.55); opacity: 0; }
+.ripple { position: absolute; width: 80px; height: 80px; margin: -40px 0 0 -40px; border-radius: 50%; background: rgba(255,255,255,.35); border: 4px solid #fff; opacity: 0; }
+
+/* cena 1 — notificações genéricas (não é a interface do sistema) */
+.lock { position: absolute; inset: 0; background: radial-gradient(600px 500px at 50% 20%, #1f2a33, #0b0f13 70%); }
+.lock .hora { position: absolute; top: 110px; width: 100%; text-align: center; font-family: Inter; font-weight: 600; font-size: 150px; letter-spacing: -.02em; }
+.lock .data { position: absolute; top: 280px; width: 100%; text-align: center; font-family: Inter; font-weight: 500; font-size: 34px; color: rgba(255,255,255,.8); }
+.notif { position: absolute; left: 34px; right: 34px; height: 150px; border-radius: 40px; padding: 24px 28px; display: flex; gap: 22px;
+  background: rgba(40,44,50,.78); backdrop-filter: blur(20px); box-shadow: 0 10px 40px rgba(0,0,0,.4); }
+.notif .ic { width: 70px; height: 70px; border-radius: 18px; background: #2fbf71; flex: none; display: grid; place-items: center; }
+.notif .ic svg { width: 40px; height: 40px; }
+.notif .b { flex: 1; min-width: 0; }
+.notif .top { display: flex; justify-content: space-between; font-size: 26px; color: rgba(255,255,255,.7); font-family: Inter; font-weight: 500; }
+.notif .de { font-size: 31px; font-weight: 600; margin-top: 4px; font-family: Inter; }
+.notif .msg { font-size: 30px; color: rgba(255,255,255,.92); font-family: Inter; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.badge { position: absolute; right: -24px; top: -24px; min-width: 92px; height: 92px; padding: 0 22px; border-radius: 999px; background: var(--vermelho);
+  font-family: Montserrat; font-weight: 900; font-size: 50px; display: grid; place-items: center; box-shadow: 0 10px 30px rgba(255,77,87,.5); z-index: 8; }
+.busy { position: absolute; left: 140px; right: 140px; top: 760px; height: 340px; border-radius: 44px; background: rgba(255,255,255,.05);
+  border: 2px solid rgba(255,255,255,.12); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px; }
+.busy .lbl { font-family: Montserrat; font-weight: 800; font-size: 32px; letter-spacing: .12em; color: rgba(255,255,255,.75); }
+.busy .tm { font-family: Montserrat; font-weight: 900; font-size: 96px; letter-spacing: .02em; }
+.busy .dot { width: 18px; height: 18px; border-radius: 50%; background: var(--vermelho); display: inline-block; margin-right: 14px; vertical-align: middle; box-shadow: 0 0 18px var(--vermelho); }
+
+/* benefícios e CTA */
+.ben { position: absolute; left: 70px; right: 70px; display: flex; gap: 30px; align-items: center; }
+.ben .ck { width: 96px; height: 96px; border-radius: 50%; background: var(--amarelo); flex: none; display: grid; place-items: center; }
+.ben .ck svg { width: 54px; height: 54px; }
+.ben .tx { font-family: Anton; text-transform: uppercase; font-size: 76px; line-height: 1.14; }
+.cta-btn { display: inline-flex; align-items: center; gap: 22px; background: var(--amarelo); color: #0a0a0a; border-radius: 999px; padding: 34px 60px;
+  font-family: Montserrat; font-weight: 900; font-size: 58px; letter-spacing: .02em; text-transform: uppercase; position: relative; overflow: hidden;
+  box-shadow: 0 20px 60px rgba(255,197,49,.35); }
+.cta-btn .shine { position: absolute; top: 0; bottom: 0; width: 140px; background: linear-gradient(90deg, transparent, rgba(255,255,255,.7), transparent); transform: skewX(-20deg); }
+.contato { display: inline-flex; align-items: center; gap: 22px; font-family: Montserrat; font-weight: 800; font-size: 52px; }
+.contato .ic { width: 84px; height: 84px; border-radius: 22px; background: #2fbf71; display: grid; place-items: center; }
+.contato .ic svg { width: 48px; height: 48px; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="layer" id="bg"></div>
+
+  <!-- CENA 1 — PROBLEMA -->
+  <div class="layer" id="s-prob">
+    <div class="busy" id="busy">
+      <svg id="tesoura" width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="#f7f7f5" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/>
+        <g id="lamina1"><line x1="8.12" y1="8.12" x2="20" y2="20"/></g>
+        <g id="lamina2"><line x1="8.12" y1="15.88" x2="20" y2="4"/></g>
+      </svg>
+      <div class="lbl"><span class="dot"></span>CORTE EM ANDAMENTO</div>
+      <div class="tm" id="cronometro">00:23</div>
+    </div>
+    <div class="phone" id="p-phone">
+      <div class="frame" id="p-frame"></div>
+      <div class="screen" id="p-screen">
+        <div class="notch"></div>
+        <div class="lock">
+          <div class="hora">14:32</div>
+          <div class="data">quarta-feira, 11 de novembro</div>
+          <div id="notifs"></div>
+        </div>
+      </div>
+      <div class="badge" id="badge">0</div>
+    </div>
+    <div class="txt titulo" id="t-p1" style="top:250px;font-size:150px"></div>
+    <div class="txt titulo" id="t-p2" style="top:250px;font-size:150px"></div>
+    <div class="txt titulo" id="t-p3" style="top:250px;font-size:112px"></div>
+    <div class="txt titulo" id="t-p4" style="top:250px;font-size:136px"></div>
+  </div>
+
+  <!-- CENA 2 — SOLUÇÃO -->
+  <div class="layer" id="s-sol">
+    <div class="txt titulo" id="t-s1a" style="top:470px;font-size:118px"></div>
+    <div class="txt titulo" id="t-s1b" style="top:620px;font-size:172px"></div>
+    <div class="txt titulo" id="t-s1c" style="top:800px;font-size:172px"></div>
+    <div class="txt" id="t-s1d" style="top:1080px"><span class="pill-out chamada" id="pill1">A qualquer hora</span></div>
+    <div class="txt" id="t-s1e" style="top:1200px"><span class="pill-out chamada" id="pill2">Sem esperar sua resposta</span></div>
+    <div class="txt" id="logo-wrap" style="top:520px"><img id="logo" src="../assets/logo-clube-da-navalha.png" style="height:150px" /></div>
+    <div class="txt titulo" id="t-s2a" style="top:740px;font-size:122px"></div>
+    <div class="txt apoio" id="t-s2b" style="top:900px;font-size:48px;color:#d4d4d4"></div>
+  </div>
+
+  <!-- CENA 3 — DEMONSTRAÇÃO REAL -->
+  <div class="layer" id="s-demo">
+    <div class="phone" id="d-phone">
+      <div class="frame" id="d-frame"></div>
+      <div class="screen" id="d-screen">
+        <img class="clip" id="clip" />
+        <div id="marks"></div>
+      </div>
+    </div>
+    <div class="layer" id="d-shade" style="background:linear-gradient(180deg,#070707 0%,#070707 31%,rgba(7,7,7,.85) 34%,rgba(7,7,7,0) 39%)"></div>
+    <div id="d-cap" class="txt" style="top:236px"></div>
+  </div>
+
+  <!-- CENA 4 — BENEFÍCIOS -->
+  <div class="layer" id="s-ben">
+    <img src="../assets/home.png" id="ben-bg" style="position:absolute;left:-10%;top:-5%;width:120%;filter:blur(26px) brightness(.32);" />
+    <div class="txt chamada" id="ben-k" style="top:300px;font-size:34px;color:var(--amarelo);letter-spacing:.24em">Para a sua barbearia</div>
+    <div class="ben" id="ben1" style="top:430px"><div class="ck"></div><div class="tx">Seus clientes agendam <span class="hl">sem esperar</span></div></div>
+    <div class="ben" id="ben2" style="top:640px"><div class="ck"></div><div class="tx">Sua barbearia disponível <span class="hl">24 horas</span></div></div>
+    <div class="ben" id="ben3" style="top:850px"><div class="ck"></div><div class="tx">Serviços, preços e profissionais <span class="hl">organizados</span></div></div>
+    <div class="ben" id="ben4" style="top:1060px"><div class="ck"></div><div class="tx">Mais <span class="hl">praticidade</span> pra você e seus clientes</div></div>
+  </div>
+
+  <!-- CENA 5 — CONVERSÃO -->
+  <div class="layer" id="s-cta">
+    <div class="txt titulo" id="c-a" style="top:410px;font-size:98px"></div>
+    <div class="txt titulo" id="c-b" style="top:620px;font-size:112px"></div>
+    <div class="txt apoio" id="c-c" style="top:800px;font-size:44px;line-height:1.35;color:#e5e5e5"></div>
+    <div class="txt" id="c-d" style="top:990px"><span class="cta-btn" id="cta-btn">Fale conosco<span class="shine" id="shine"></span></span></div>
+    <div class="txt apoio" id="c-e" style="top:1172px;font-size:40px;color:#cfcfcf">e conheça a solução</div>
+    <div class="txt" id="c-f" style="top:1285px"><span class="contato"><span class="ic"></span><span id="fone"></span></span></div>
+    <div class="txt" id="c-g" style="top:1460px"><img src="../assets/logo-clube-da-navalha.png" style="height:96px;opacity:.9" /></div>
+  </div>
+
+  <div class="layer" id="tint"></div>
+  <div class="layer" id="vignette"></div>
+  <svg class="layer" id="grain" width="1080" height="1920"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(#n)"/></svg>
+  <div class="layer" id="flash"></div>
+</div>
+<script src="video.js"></script>
+</body>
+</html>

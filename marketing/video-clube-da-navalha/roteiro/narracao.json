@@ -1,0 +1,76 @@
+{
+  "voz": "faber",
+  "velocidade": 1.0,
+  "falas": [
+    {
+      "id": "p1",
+      "cena": "problema",
+      "texto": "Você está no meio de um corte..."
+    },
+    {
+      "id": "p2",
+      "cena": "problema",
+      "texto": "e o celular não para."
+    },
+    {
+      "id": "p3",
+      "cena": "problema",
+      "texto": "Cliente querendo horário, pedindo encaixe..."
+    },
+    {
+      "id": "p4",
+      "cena": "problema",
+      "texto": "e você para tudo pra responder."
+    },
+    {
+      "id": "s1",
+      "cena": "solucao",
+      "texto": "E se os seus clientes pudessem agendar sozinhos, a qualquer hora, sem esperar a sua resposta?"
+    },
+    {
+      "id": "s2",
+      "cena": "solucao",
+      "texto": "Com o Clube da Navalha, sua barbearia tem um site próprio com agendamento online."
+    },
+    {
+      "id": "d1",
+      "cena": "demo",
+      "texto": "O cliente vê os serviços e os preços,"
+    },
+    {
+      "id": "d2",
+      "cena": "demo",
+      "texto": "toca no serviço que quer, escolhe o barbeiro,"
+    },
+    {
+      "id": "d3",
+      "cena": "demo",
+      "texto": "e só aparecem os horários livres."
+    },
+    {
+      "id": "d4",
+      "cena": "demo",
+      "texto": "Confere o resumo, com dia, horário e valor,"
+    },
+    {
+      "id": "d5",
+      "cena": "demo",
+      "texto": "e confirma com nome e celular. Sem e-mail, sem código."
+    },
+    {
+      "id": "b1",
+      "cena": "beneficios",
+      "texto": "Seus clientes agendam sem esperar. E a sua barbearia fica disponível vinte e quatro horas."
+    },
+    {
+      "id": "c1",
+      "cena": "cta",
+      "texto": "Sua barbearia merece um atendimento mais profissional."
+    },
+    {
+      "id": "c2",
+      "cena": "cta",
+      "texto": "Fale com a gente e conheça o Clube da Navalha."
+    }
+  ]
+}
