@@ -1,5 +1,5 @@
 {
-  "voz": "faber",
+  "voz": "jeff",
   "velocidade": 1.0,
   "falas": [
     {
@@ -25,7 +25,8 @@
     {
       "id": "s1",
       "cena": "solucao",
-      "texto": "E se os seus clientes pudessem agendar sozinhos, a qualquer hora, sem esperar a sua resposta?"
+      "texto": "E se os seus clientes pudessem agendar sozinhos, a qualquer hora, sem esperar a sua resposta?",
+      "velocidade": 0.84
     },
     {
       "id": "s2",

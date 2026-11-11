@@ -15,8 +15,10 @@ syn = SynthesisConfig(length_scale=cfg["velocidade"], noise_scale=0.55, noise_w_
 dur = {}
 for f in cfg["falas"]:
     raw = os.path.join(ROOT, "audio", f"_raw_{f['id']}.wav")
+    # velocidade opcional por fala (length_scale: menor = mais rápido)
+    syn_f = SynthesisConfig(length_scale=f.get("velocidade", cfg["velocidade"]), noise_scale=0.55, noise_w_scale=0.5)
     with wave.open(raw, "wb") as w:
-        voice.synthesize_wav(f["texto"], w, syn_config=syn)
+        voice.synthesize_wav(f["texto"], w, syn_config=syn_f)
     out = os.path.join(ROOT, "audio", f"vo_{f['id']}.wav")
     # 48 kHz, corta silêncio das pontas, leve compressão e EQ de presença para voz comercial
     subprocess.run([

@@ -7,7 +7,7 @@ Vídeo vertical 9:16 (1080×1920, 30 fps, ~55 s) para prospecção de donos de b
 | Etapa | Script | O que faz |
 |---|---|---|
 | 1 | `scripts/1-capturar.cjs` | Grava as **telas reais** do site no celular (1080×1920) e registra a posição de cada toque. Bloqueia qualquer envio (só GET): nenhuma conta ou agendamento é criado. |
-| 2 | `scripts/2-narracao.py` | Gera a narração com o Piper (voz CC0 *faber*) frase por frase, a partir de `roteiro/narracao.json`. |
+| 2 | `scripts/2-narracao.py` | Gera a narração com o Piper (voz CC0 *jeff*) frase por frase, a partir de `roteiro/narracao.json`. |
 | 3 | `scripts/3-audio.py` | Sintetiza a trilha e os efeitos (livres de direitos), posiciona a narração e mixa (música abaixa sob a voz, -14 LUFS). |
 | 4 | `scripts/4-renderizar.cjs` | Renderiza `composicao/` quadro a quadro e junta com o áudio em `saida/clube-da-navalha-comercial-v2.mp4`. |
 
