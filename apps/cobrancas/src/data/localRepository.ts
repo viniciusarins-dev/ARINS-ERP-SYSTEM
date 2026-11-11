@@ -5,7 +5,7 @@ import { assertValidClientInput, financialsChanged } from "./validate";
 
 const STORAGE_KEY = "parcela-os:local:v1";
 
-const empty = (): Snapshot => ({ clients: [], projects: [], installments: [], payments: [] });
+const empty = (): Snapshot => ({ clients: [], projects: [], installments: [], payments: [], budgets: [] });
 
 function read(): Snapshot {
   try {
@@ -92,6 +92,7 @@ export function createLocalRepository(): Repository {
       const projectIds = new Set(s.projects.filter((p) => p.clientId === clientId).map((p) => p.id));
       const instIds = new Set(s.installments.filter((i) => projectIds.has(i.projectId)).map((i) => i.id));
       write({
+        ...s,
         clients: s.clients.filter((c) => c.id !== clientId),
         projects: s.projects.filter((p) => !projectIds.has(p.id)),
         installments: s.installments.filter((i) => !instIds.has(i.id)),
@@ -113,6 +114,28 @@ export function createLocalRepository(): Repository {
     async undoPayment(installmentId) {
       const s = read();
       s.payments = s.payments.filter((p) => p.installmentId !== installmentId);
+      write(s);
+    },
+
+    async saveBudget(input, id) {
+      const s = read();
+      const ts = now();
+      if (id) {
+        const b = s.budgets.find((x) => x.id === id);
+        if (!b) throw new RepoError("not_found", "Orçamento não encontrado.");
+        Object.assign(b, input, { updatedAt: ts });
+        write(s);
+        return id;
+      }
+      const newId = uid();
+      s.budgets.push({ ...input, id: newId, createdAt: ts, updatedAt: ts });
+      write(s);
+      return newId;
+    },
+
+    async deleteBudget(id) {
+      const s = read();
+      s.budgets = s.budgets.filter((b) => b.id !== id);
       write(s);
     },
   };

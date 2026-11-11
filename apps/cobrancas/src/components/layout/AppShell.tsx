@@ -1,4 +1,4 @@
-import { Bell, HardDrive, KeyRound, LayoutDashboard, LogOut, Plus, Search, UserPlus, Users, X } from "lucide-react";
+import { Bell, Calculator, HardDrive, KeyRound, LayoutDashboard, LogOut, Plus, Search, UserPlus, Users, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
 
@@ -17,6 +17,7 @@ const nav: NavItem[] = [
   { to: "/", label: "Painel", icon: <LayoutDashboard />, end: true },
   { to: "/clientes", label: "Clientes", icon: <Users />, end: true },
   { to: "/clientes/novo", label: "Novo cliente", icon: <UserPlus /> },
+  { to: "/orcamentos", label: "Orçamentos", icon: <Calculator /> },
 ];
 
 /** Remove acentos para busca: "joao" encontra "João". */
@@ -384,9 +385,10 @@ function MobileNav() {
   return (
     <nav
       aria-label="Principal"
-      className="fixed inset-x-3 bottom-3 z-30 grid h-16 grid-cols-3 items-center rounded-2xl border border-white/10 bg-ink-900/95 px-2 shadow-[0_-10px_40px_-10px_rgba(0,0,0,0.9)] backdrop-blur-xl lg:hidden"
+      className="fixed inset-x-3 bottom-3 z-30 grid h-16 grid-cols-4 items-center rounded-2xl border border-white/10 bg-ink-900/95 px-2 shadow-[0_-10px_40px_-10px_rgba(0,0,0,0.9)] backdrop-blur-xl lg:hidden"
     >
       <DockLink to="/" end icon={<LayoutDashboard />} label="Painel" />
+      <DockLink to="/clientes" end icon={<Users />} label="Clientes" />
       <NavLink
         to="/clientes/novo"
         aria-label="Novo cliente"
@@ -394,7 +396,7 @@ function MobileNav() {
       >
         <Plus className="size-6" strokeWidth={2.4} />
       </NavLink>
-      <DockLink to="/clientes" end icon={<Users />} label="Clientes" />
+      <DockLink to="/orcamentos" icon={<Calculator />} label="Orçamentos" />
     </nav>
   );
 }

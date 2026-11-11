@@ -28,13 +28,15 @@ type FormState = {
 
 type Errors = Partial<Record<keyof FormState, string>>;
 
-function initialState(today: ISODate, view?: ClientView): FormState {
+export type ClientPrefill = { fullName?: string; whatsapp?: string; projectName?: string; totalCents?: number };
+
+function initialState(today: ISODate, view?: ClientView, prefill?: ClientPrefill): FormState {
   if (!view || !view.project) {
     return {
-      fullName: "",
-      whatsapp: "",
-      projectName: "",
-      totalCents: 0,
+      fullName: prefill?.fullName ?? "",
+      whatsapp: prefill?.whatsapp ? formatPhone(prefill.whatsapp) : "",
+      projectName: prefill?.projectName ?? "",
+      totalCents: prefill?.totalCents ?? 0,
       hadEntry: "nao",
       entryCents: 0,
       plan: "mensal",
@@ -59,13 +61,15 @@ function initialState(today: ISODate, view?: ClientView): FormState {
 type ClientFormProps = {
   today: ISODate;
   view?: ClientView;
+  /** dados iniciais para um cliente novo (ex.: vindos de um orçamento) */
+  prefill?: ClientPrefill;
   submitLabel: string;
   onSubmit: (input: ClientInput) => Promise<void>;
   onCancel: () => void;
 };
 
-export function ClientForm({ today, view, submitLabel, onSubmit, onCancel }: ClientFormProps) {
-  const [form, setForm] = useState<FormState>(() => initialState(today, view));
+export function ClientForm({ today, view, prefill, submitLabel, onSubmit, onCancel }: ClientFormProps) {
+  const [form, setForm] = useState<FormState>(() => initialState(today, view, prefill));
   const [errors, setErrors] = useState<Errors>({});
   const [saving, setSaving] = useState(false);
   const locked = Boolean(view?.installments.some((i) => i.payment));

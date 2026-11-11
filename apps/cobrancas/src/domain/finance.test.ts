@@ -19,6 +19,7 @@ const snapshot: Snapshot = {
     { id: "i3", projectId: "p1", number: 3, amountCents: 50000, dueDate: "2026-12-10" },
   ],
   payments: [{ id: "pay1", installmentId: "i1", amountCents: 50000, paidAt: "2026-10-09", createdAt: "y" }],
+  budgets: [],
 };
 
 describe("finance", () => {

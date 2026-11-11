@@ -7,7 +7,7 @@ import { supabase } from "@/lib/supabase";
 
 import { createLocalRepository } from "./localRepository";
 import { createSupabaseRepository } from "./supabaseRepository";
-import { RepoError, type ClientInput, type Repository, type Snapshot } from "./types";
+import { RepoError, type Budget, type BudgetInput, type ClientInput, type Repository, type Snapshot } from "./types";
 
 type DataState = {
   mode: Repository["mode"];
@@ -16,6 +16,9 @@ type DataState = {
   error: string | null;
   views: ClientView[];
   kpis: Kpis;
+  budgets: Budget[];
+  saveBudget: (input: BudgetInput, id?: string) => Promise<string>;
+  deleteBudget: (id: string) => Promise<void>;
   reload: () => Promise<void>;
   createClient: (input: ClientInput) => Promise<string>;
   updateClient: (clientId: string, input: ClientInput) => Promise<void>;
@@ -26,7 +29,7 @@ type DataState = {
 
 const DataContext = createContext<DataState | null>(null);
 
-const emptySnapshot: Snapshot = { clients: [], projects: [], installments: [], payments: [] };
+const emptySnapshot: Snapshot = { clients: [], projects: [], installments: [], payments: [], budgets: [] };
 
 export function DataProvider({ children }: { children: ReactNode }) {
   const repo = useMemo<Repository>(
@@ -68,6 +71,16 @@ export function DataProvider({ children }: { children: ReactNode }) {
       error,
       views,
       kpis,
+      budgets: snapshot.budgets,
+      async saveBudget(input, id) {
+        const savedId = await repo.saveBudget(input, id);
+        await reload();
+        return savedId;
+      },
+      async deleteBudget(id) {
+        await repo.deleteBudget(id);
+        await reload();
+      },
       reload,
       async createClient(input) {
         const id = await repo.createClient(input);
@@ -99,7 +112,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
         await reload();
       },
     }),
-    [repo, today, loading, error, views, kpis, reload],
+    [repo, today, loading, error, views, kpis, snapshot.budgets, reload],
   );
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;

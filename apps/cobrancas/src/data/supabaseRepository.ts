@@ -3,7 +3,7 @@ import type { ISODate } from "@/domain/dates";
 import type { PaymentPlan } from "@/domain/schedule";
 import type { ArmagClient } from "@/lib/supabase";
 
-import { RepoError, type ClientInput, type Repository, type Snapshot } from "./types";
+import { RepoError, type BudgetInput, type ClientInput, type Repository, type Snapshot } from "./types";
 import { assertValidClientInput } from "./validate";
 
 type Row = Record<string, unknown>;
@@ -49,7 +49,7 @@ export function createSupabaseRepository(sb: ArmagClient): Repository {
       if (member !== true) {
         throw new RepoError("forbidden", "Sua conta não tem acesso ao ARMAG Cobranças. Fale com o administrador.");
       }
-      const [clients, projects, installments, payments] = await Promise.all([
+      const [clients, projects, installments, payments, budgets] = await Promise.all([
         run(sb.from("clients").select("id, full_name, whatsapp, created_at")),
         run(
           sb
@@ -58,6 +58,14 @@ export function createSupabaseRepository(sb: ArmagClient): Repository {
         ),
         run(sb.from("installments").select("id, project_id, number, amount_cents, due_date")),
         run(sb.from("payments").select("id, installment_id, amount_cents, paid_at, created_at")),
+        run(
+          sb
+            .from("budgets")
+            .select(
+              "id, title, client_name, client_phone, selections, topics, hourly_rate_cents, hours_per_day, margin_percent, total_hours, total_cents, notes, created_at, updated_at",
+            )
+            .order("created_at", { ascending: false }),
+        ),
       ]);
       return {
         clients: (clients as Row[]).map((r) => ({
@@ -91,6 +99,22 @@ export function createSupabaseRepository(sb: ArmagClient): Repository {
           paidAt: r.paid_at as ISODate,
           createdAt: r.created_at as string,
         })),
+        budgets: (budgets as Row[]).map((r) => ({
+          id: r.id as string,
+          title: r.title as string,
+          clientName: (r.client_name as string | null) ?? null,
+          clientPhone: (r.client_phone as string | null) ?? null,
+          selections: (r.selections as Snapshot["budgets"][number]["selections"]) ?? {},
+          topics: (r.topics as Snapshot["budgets"][number]["topics"]) ?? [],
+          hourlyRateCents: Number(r.hourly_rate_cents),
+          hoursPerDay: Number(r.hours_per_day),
+          marginPercent: Number(r.margin_percent),
+          totalHours: Number(r.total_hours),
+          totalCents: Number(r.total_cents),
+          notes: (r.notes as string | null) ?? null,
+          createdAt: r.created_at as string,
+          updatedAt: r.updated_at as string,
+        })),
       };
     },
 
@@ -114,6 +138,32 @@ export function createSupabaseRepository(sb: ArmagClient): Repository {
 
     async undoPayment(installmentId) {
       await run(sb.from("payments").delete().eq("installment_id", installmentId));
+    },
+
+    async saveBudget(input: BudgetInput, id?: string) {
+      const row = {
+        title: input.title.trim(),
+        client_name: input.clientName?.trim() || null,
+        client_phone: input.clientPhone || null,
+        selections: input.selections,
+        topics: input.topics,
+        hourly_rate_cents: input.hourlyRateCents,
+        hours_per_day: input.hoursPerDay,
+        margin_percent: input.marginPercent,
+        total_hours: input.totalHours,
+        total_cents: input.totalCents,
+        notes: input.notes?.trim() || null,
+      };
+      if (id) {
+        await run(sb.from("budgets").update(row).eq("id", id));
+        return id;
+      }
+      const data = (await run(sb.from("budgets").insert(row).select("id").single())) as { id: string };
+      return data.id;
+    },
+
+    async deleteBudget(id) {
+      await run(sb.from("budgets").delete().eq("id", id));
     },
   };
 }

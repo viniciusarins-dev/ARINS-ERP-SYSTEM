@@ -1,4 +1,5 @@
 import type { ISODate } from "@/domain/dates";
+import type { BudgetSelections, CustomTopic } from "@/domain/budget";
 import type { PaymentPlan } from "@/domain/schedule";
 
 /** Todos os valores monetários são inteiros em centavos. */
@@ -39,11 +40,31 @@ export type Payment = {
   createdAt: string;
 };
 
+export type Budget = {
+  id: string;
+  title: string;
+  clientName: string | null;
+  clientPhone: string | null;
+  selections: BudgetSelections;
+  topics: CustomTopic[];
+  hourlyRateCents: number;
+  hoursPerDay: number;
+  marginPercent: number;
+  totalHours: number;
+  totalCents: number;
+  notes: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type BudgetInput = Omit<Budget, "id" | "createdAt" | "updatedAt">;
+
 export type Snapshot = {
   clients: Client[];
   projects: Project[];
   installments: Installment[];
   payments: Payment[];
+  budgets: Budget[];
 };
 
 export type ScheduleInput = {
@@ -87,4 +108,7 @@ export interface Repository {
   /** Falha com `already_paid` se a parcela já tiver pagamento. */
   registerPayment(installmentId: string, paidAt: ISODate): Promise<void>;
   undoPayment(installmentId: string): Promise<void>;
+  /** cria (sem id) ou atualiza um orçamento; devolve o id */
+  saveBudget(input: BudgetInput, id?: string): Promise<string>;
+  deleteBudget(id: string): Promise<void>;
 }

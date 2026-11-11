@@ -8,6 +8,8 @@ import { DataProvider } from "@/data/DataProvider";
 import { ChargeProvider } from "@/features/charge/ChargeProvider";
 import { PaymentProvider } from "@/features/payments/PaymentProvider";
 import { backendMode } from "@/lib/env";
+import { BudgetEditorPage } from "@/pages/BudgetEditorPage";
+import { BudgetsPage } from "@/pages/BudgetsPage";
 import { ClientDetailPage } from "@/pages/ClientDetailPage";
 import { ClientsPage } from "@/pages/ClientsPage";
 import { Dashboard } from "@/pages/Dashboard";
@@ -59,6 +61,9 @@ export default function App() {
               <Route path="clientes/novo" element={<NewClientPage />} />
               <Route path="clientes/:id" element={<ClientDetailPage />} />
               <Route path="clientes/:id/editar" element={<EditClientPage />} />
+              <Route path="orcamentos" element={<BudgetsPage />} />
+              <Route path="orcamentos/novo" element={<BudgetEditorPage />} />
+              <Route path="orcamentos/:id" element={<BudgetEditorPage />} />
               <Route path="*" element={<NotFound />} />
             </Route>
           </Routes>
