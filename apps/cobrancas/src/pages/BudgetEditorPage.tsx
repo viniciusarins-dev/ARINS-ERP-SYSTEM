@@ -483,7 +483,8 @@ function CatalogRow({
     );
   }
 
-  const unitHint = item.kind === "quantity" ? `${item.hoursPerUnit}h por ${item.unit}` : item.kind === "toggle" ? `${item.hours}h` : undefined;
+  const unitHint =
+    item.kind === "quantity" ? `${hoursLabel(item.hoursPerUnit)} por ${item.unit}` : item.kind === "toggle" ? hoursLabel(item.hours) : undefined;
 
   return (
     <li className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl px-3 py-3 transition-colors hover:bg-white/[0.025]">

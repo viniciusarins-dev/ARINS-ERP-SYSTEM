@@ -1,6 +1,7 @@
 /**
  * Orçamentos: catálogo de itens prontos + tópicos livres → horas, valor e prazo.
- * As horas de cada item são estimativas editáveis no catálogo abaixo.
+ * As horas de cada item são estimativas editáveis no catálogo abaixo
+ * (calibradas em 11/2026: metade das estimativas iniciais).
  */
 
 export type ToggleItem = { kind: "toggle"; id: string; label: string; hours: number; hint?: string };
@@ -28,10 +29,10 @@ export const BUDGET_CATALOG: CatalogGroup[] = [
     id: "base",
     title: "Base do projeto",
     items: [
-      { kind: "toggle", id: "setup", label: "Configuração, hospedagem e publicação", hours: 4 },
-      { kind: "toggle", id: "responsive", label: "Layout responsivo (celular e tablet)", hours: 6 },
-      { kind: "quantity", id: "pages", label: "Páginas / telas", hoursPerUnit: 3, unit: "página", max: 60 },
-      { kind: "toggle", id: "design", label: "Design personalizado (protótipo antes de programar)", hours: 8 },
+      { kind: "toggle", id: "setup", label: "Configuração, hospedagem e publicação", hours: 2 },
+      { kind: "toggle", id: "responsive", label: "Layout responsivo (celular e tablet)", hours: 3 },
+      { kind: "quantity", id: "pages", label: "Páginas / telas", hoursPerUnit: 1.5, unit: "página", max: 60 },
+      { kind: "toggle", id: "design", label: "Design personalizado (protótipo antes de programar)", hours: 4 },
     ],
   },
   {
@@ -44,49 +45,49 @@ export const BUDGET_CATALOG: CatalogGroup[] = [
         label: "Sistema de login",
         options: [
           { value: "nao", label: "Não", hours: 0 },
-          { value: "1", label: "1 tipo de usuário", hours: 8 },
-          { value: "2", label: "2 tipos", hours: 14 },
-          { value: "3", label: "3 ou mais tipos", hours: 20 },
+          { value: "1", label: "1 tipo de usuário", hours: 4 },
+          { value: "2", label: "2 tipos", hours: 7 },
+          { value: "3", label: "3 ou mais tipos", hours: 10 },
         ],
         hint: "Ex.: administrador, cliente, funcionário",
       },
-      { kind: "toggle", id: "reset", label: "Recuperação de senha por e-mail", hours: 3 },
-      { kind: "toggle", id: "google", label: "Login com Google", hours: 4 },
-      { kind: "toggle", id: "permissions", label: "Permissões por tipo de usuário", hours: 6 },
+      { kind: "toggle", id: "reset", label: "Recuperação de senha por e-mail", hours: 1.5 },
+      { kind: "toggle", id: "google", label: "Login com Google", hours: 2 },
+      { kind: "toggle", id: "permissions", label: "Permissões por tipo de usuário", hours: 3 },
     ],
   },
   {
     id: "system",
     title: "Funcionalidades do sistema",
     items: [
-      { kind: "toggle", id: "admin", label: "Painel administrativo", hours: 16 },
-      { kind: "quantity", id: "crud", label: "Cadastros (listar, criar, editar, excluir)", hoursPerUnit: 4, unit: "cadastro", max: 40 },
-      { kind: "toggle", id: "dashboard", label: "Dashboard com indicadores e gráficos", hours: 8 },
-      { kind: "toggle", id: "reports", label: "Relatórios com filtros", hours: 6 },
-      { kind: "toggle", id: "export", label: "Exportação em PDF / Excel", hours: 6 },
-      { kind: "toggle", id: "upload", label: "Upload de arquivos e imagens", hours: 5 },
-      { kind: "toggle", id: "notifications", label: "Notificações / alertas", hours: 6 },
+      { kind: "toggle", id: "admin", label: "Painel administrativo", hours: 8 },
+      { kind: "quantity", id: "crud", label: "Cadastros (listar, criar, editar, excluir)", hoursPerUnit: 2, unit: "cadastro", max: 40 },
+      { kind: "toggle", id: "dashboard", label: "Dashboard com indicadores e gráficos", hours: 4 },
+      { kind: "toggle", id: "reports", label: "Relatórios com filtros", hours: 3 },
+      { kind: "toggle", id: "export", label: "Exportação em PDF / Excel", hours: 3 },
+      { kind: "toggle", id: "upload", label: "Upload de arquivos e imagens", hours: 2.5 },
+      { kind: "toggle", id: "notifications", label: "Notificações / alertas", hours: 3 },
     ],
   },
   {
     id: "integrations",
     title: "Integrações",
     items: [
-      { kind: "toggle", id: "payments", label: "Pagamento online (PIX / cartão)", hours: 12 },
-      { kind: "toggle", id: "whatsapp", label: "WhatsApp (botões e mensagens prontas)", hours: 3 },
-      { kind: "toggle", id: "email", label: "Envio de e-mails automáticos", hours: 4 },
-      { kind: "quantity", id: "api", label: "Integração com API externa", hoursPerUnit: 6, unit: "API", max: 20 },
+      { kind: "toggle", id: "payments", label: "Pagamento online (PIX / cartão)", hours: 6 },
+      { kind: "toggle", id: "whatsapp", label: "WhatsApp (botões e mensagens prontas)", hours: 1.5 },
+      { kind: "toggle", id: "email", label: "Envio de e-mails automáticos", hours: 2 },
+      { kind: "quantity", id: "api", label: "Integração com API externa", hoursPerUnit: 3, unit: "API", max: 20 },
     ],
   },
   {
     id: "site",
     title: "Site e divulgação",
     items: [
-      { kind: "toggle", id: "contact", label: "Formulário de contato", hours: 2 },
-      { kind: "toggle", id: "blog", label: "Blog / notícias", hours: 8 },
-      { kind: "toggle", id: "seo", label: "SEO básico (Google)", hours: 4 },
-      { kind: "toggle", id: "analytics", label: "Google Analytics / métricas", hours: 1 },
-      { kind: "toggle", id: "i18n", label: "Site em mais de um idioma", hours: 8 },
+      { kind: "toggle", id: "contact", label: "Formulário de contato", hours: 1 },
+      { kind: "toggle", id: "blog", label: "Blog / notícias", hours: 4 },
+      { kind: "toggle", id: "seo", label: "SEO básico (Google)", hours: 2 },
+      { kind: "toggle", id: "analytics", label: "Google Analytics / métricas", hours: 0.5 },
+      { kind: "toggle", id: "i18n", label: "Site em mais de um idioma", hours: 4 },
     ],
   },
 ];
@@ -118,6 +119,11 @@ export type BudgetResult = {
 };
 
 /** Arredonda para cima, de meia em meia hora (estimativa nunca fica abaixo do calculado). */
+/** 1.5 → "1,5h" */
+export function formatHours(h: number): string {
+  return `${String(h).replace(".", ",")}h`;
+}
+
 const roundHalf = (h: number) => (h <= 0 ? 0 : Math.ceil(h * 2 - 1e-9) / 2);
 
 /** Converte as escolhas em linhas com horas. */
@@ -135,7 +141,7 @@ export function budgetLines(selections: BudgetSelections, topics: CustomTopic[])
         lines.push({
           id: item.id,
           label: item.label,
-          detail: `${v} ${item.unit}${v > 1 ? "s" : ""} × ${item.hoursPerUnit}h`,
+          detail: `${v} ${item.unit}${v > 1 ? "s" : ""} × ${formatHours(item.hoursPerUnit)}`,
           hours: v * item.hoursPerUnit,
         });
       }
