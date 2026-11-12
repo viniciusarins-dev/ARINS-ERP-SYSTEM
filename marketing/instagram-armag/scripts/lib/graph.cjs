@@ -1,6 +1,6 @@
 // Publicação pela Instagram Graph API. O token NÃO fica no código: na sessão do Claude o proxy
 // injeta o cabeçalho Authorization para graph.facebook.com; fora dela, defina IG_TOKEN.
-const BASE = 'https://graph.facebook.com/v21.0';
+const BASE = `https://graph.facebook.com/${process.env.IG_GRAPH_VERSION || 'v27.0'}`;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 async function chamar(fetch, metodo, caminho, corpo) {

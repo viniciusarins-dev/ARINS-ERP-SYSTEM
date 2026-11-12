@@ -15,7 +15,7 @@ test('coleta insights só dos publicados e resume por slot', async () => {
   ];
   const urls = [];
   const resp = { 1: insights(100, 5, 1, 4), 2: insights(900, 20, 9, 30), 3: insights(300, 7, 2, 6) };
-  const fetch = async (url) => { urls.push(url); const id = url.match(/v21\.0\/(\d+)\//)[1]; return { ok: true, status: 200, json: async () => resp[id] }; };
+  const fetch = async (url) => { urls.push(url); const id = url.match(/v27\.0\/(\d+)\//)[1]; return { ok: true, status: 200, json: async () => resp[id] }; };
   const linhas = await coletar(hist, { fetch });
   assert.equal(linhas.length, 3);
   assert.ok(urls[0].includes('/1/insights?metric=reach,saved,shares,profile_visits'));

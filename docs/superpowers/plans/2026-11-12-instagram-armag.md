@@ -9,7 +9,7 @@
 - I/O (Playwright render, Supabase Storage upload, Graph API) receives `fetch` by injection so it can be tested with fakes.
 - Four recurring scheduled tasks (fresh session per fire, push notification on) run the instructions in `ROTINA.md`.
 
-**Tech Stack:** Node 22 (`node:test`, global `fetch`), preinstalled Playwright/Chromium, FFmpeg (already used by the video project), Instagram Graph API v21.0, Supabase Storage (Arins-ERP project).
+**Tech Stack:** Node 22 (`node:test`, global `fetch`), preinstalled Playwright/Chromium, FFmpeg (already used by the video project), Instagram Graph API v27.0, Supabase Storage (Arins-ERP project).
 
 **Spec:** `docs/superpowers/specs/2026-11-12-instagram-armag-design.md`
 

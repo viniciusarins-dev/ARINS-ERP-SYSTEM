@@ -20,7 +20,7 @@ function falso(respostas) {
   fn.chamadas = chamadas;
   return fn;
 }
-const G = 'https://graph.facebook.com/v21.0';
+const G = 'https://graph.facebook.com/v27.0';
 const LEG = 'Ação 🚀 (47) 98919-1953';
 const opts = (fetch) => ({ fetch, igUserId: '17841', esperaMs: 0, tentativas: 3 });
 
