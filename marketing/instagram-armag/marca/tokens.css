@@ -1,0 +1,16 @@
+/* Identidade ARMAG — mesmas cores do painel (apps/cobrancas/src/styles/index.css) */
+@font-face { font-family: "Anton"; src: url(fonts/anton-latin-400-normal.woff2) format("woff2"); font-weight: 400; }
+@font-face { font-family: "Montserrat"; src: url(fonts/montserrat-latin-600-normal.woff2) format("woff2"); font-weight: 600; }
+@font-face { font-family: "Montserrat"; src: url(fonts/montserrat-latin-700-normal.woff2) format("woff2"); font-weight: 700; }
+@font-face { font-family: "Montserrat"; src: url(fonts/montserrat-latin-800-normal.woff2) format("woff2"); font-weight: 800; }
+@font-face { font-family: "Montserrat"; src: url(fonts/montserrat-latin-900-normal.woff2) format("woff2"); font-weight: 900; }
+@font-face { font-family: "Inter"; src: url(fonts/inter-latin-400-normal.woff2) format("woff2"); font-weight: 400; }
+@font-face { font-family: "Inter"; src: url(fonts/inter-latin-500-normal.woff2) format("woff2"); font-weight: 500; }
+@font-face { font-family: "Inter"; src: url(fonts/inter-latin-600-normal.woff2) format("woff2"); font-weight: 600; }
+:root {
+  --ink: #050505;
+  --gold: #d9a441;
+  --cyan: #35ddfb;
+  --ice: #f2f5f7;
+  --mist: #9aa3ad;
+}

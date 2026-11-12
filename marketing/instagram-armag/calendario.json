@@ -1,0 +1,11 @@
+{
+  "fuso": "America/Sao_Paulo",
+  "antecedenciaMin": 60,
+  "janelaConfirmacaoHoras": 3,
+  "slots": [
+    { "id": "seg", "dia": 1, "hora": "19:35", "formato": "carrossel", "pilar": "dor" },
+    { "id": "ter", "dia": 2, "hora": "12:10", "formato": "post", "pilar": "dica" },
+    { "id": "qua", "dia": 3, "hora": "19:40", "formato": "reel", "pilar": "demonstracao" },
+    { "id": "qui", "dia": 4, "hora": "12:20", "formato": "carrossel", "pilar": "case" }
+  ]
+}
