@@ -1,0 +1,14 @@
+{
+  "slug": "exemplo",
+  "slot": "seg",
+  "data": "2026-11-16",
+  "formato": "carrossel",
+  "pilar": "dor",
+  "tema": "Exemplo de carrossel (fixture dos testes)",
+  "legenda": "Exemplo. Chama no WhatsApp: (47) 98919-1953\n\n#joinville #joinvillesc #pequenosnegocios #software #automacao",
+  "slides": [
+    { "titulo": "Ainda cobra cliente *um por um* no WhatsApp?", "texto": "Arrasta pro lado →" },
+    { "titulo": "Com um botão, *todas as cobranças* saem", "texto": "Mensagem pronta para cada cliente, com a parcela e o valor." },
+    { "titulo": "Quer isso no *seu negócio?*", "tipo": "cta" }
+  ]
+}

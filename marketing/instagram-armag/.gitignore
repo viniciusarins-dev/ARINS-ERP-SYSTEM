@@ -1,0 +1,3 @@
+posts/.tmp-*/
+posts/exemplo/*.png
+node_modules/
