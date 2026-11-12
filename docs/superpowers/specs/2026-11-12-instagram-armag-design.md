@@ -3,9 +3,16 @@
 ## Intenção
 A ARMAG é uma software house com dois cases principais:
 - o site com agendamento da barbearia (Clube da Navalha);
-- o app de cobranças, que dispara várias mensagens de WhatsApp com um botão (Evolution API).
+- o **Cobrança iPad** (repositório `viniciusarins-dev/Cobranca-ipad`), um app web (PWA para iPad) de empréstimos e vendas parceladas:
+  - controle de parcelas e juros de atraso;
+  - campanha de cobrança que dispara várias mensagens de WhatsApp de uma vez, em fila com proteção contra banimento;
+  - disparo automático diário das parcelas atrasadas;
+  - provedores Evolution API, Meta Cloud API, Z-API, Twilio e WPPConnect;
+  - multiusuário com isolamento de dados.
 
-O objetivo é atrair **donos de pequenos negócios da região** e levá-los a **chamar no WhatsApp pedindo orçamento**.
+Também existe o painel ARMAG Cobranças (`apps/cobrancas`), que monta a mensagem de cada cliente com PIX, além de orçamentos e prospecção.
+
+O objetivo é atrair **donos de pequenos negócios de Joinville (SC) e região** e levá-los a **chamar no WhatsApp pedindo orçamento**.
 
 O cliente ideal já tem um processo ou sistema, como fluxo de caixa e estoque, e precisa de uma peça que falta, como a cobrança. O vídeo curto (23 s) vira anúncio patrocinado na Meta.
 
@@ -84,7 +91,7 @@ Horário de Brasília, baseado nos estudos de 2026 (Sprout, Buffer, Hootsuite) e
 - **Fonte de verdade:** `marketing/instagram-armag/marca/o-que-vendemos.md`, com o que cada sistema faz de fato. Precisa ser aprovado pelo dono, e Claude não afirma nada fora dele.
 - **Visual:** identidade ARMAG (preto, dourado e ciano, logo atual) em templates HTML renderizados com Playwright, como no vídeo.
 - **Reels:** feitos com o pipeline de vídeo já existente (telas reais gravadas, narração do Jeff, música e efeitos). Os dois vídeos da barbearia já servem para os primeiros reels.
-- **Legenda:** curta, gancho na 1ª linha, chamada para o WhatsApp, 5 a 8 hashtags locais e de nicho.
+- **Legenda:** curta, gancho na 1ª linha, chamada para o WhatsApp, 5 a 8 hashtags locais e de nicho (#joinville #joinvillesc #empreendedorismojoinville e similares).
 
 ### Métricas
 Após 4 a 6 semanas, uma tarefa semanal lê os insights dos posts (alcance, salvamentos, visitas ao perfil, cliques no WhatsApp). Ela propõe novos horários e temas e **pergunta antes de mudar**.
@@ -92,7 +99,7 @@ Após 4 a 6 semanas, uma tarefa semanal lê os insights dos posts (alcance, salv
 ### Anúncio
 `marketing/instagram-armag/anuncio-meta.md` traz:
 - 3 variações de texto;
-- público: raio de cerca de 25 km, donos de pequenas empresas, 25 a 55 anos;
+- público: raio de cerca de 25 km em torno de Joinville, donos de pequenas empresas, 25 a 55 anos;
 - objetivo "mensagens no WhatsApp";
 - sugestão de R$ 15–20 por dia por 7 dias e o passo a passo no Gerenciador.
 
@@ -115,4 +122,5 @@ marketing/instagram-armag/
 ## O que fica para quem implementar
 - Hospedagem pública da mídia. Sugestão: bucket público no Supabase do Arins-ERP. Confirmar como subir com uma única chave pelo proxy.
 - Verificar se as sessões criadas pelas tarefas agendadas têm o repositório e a rede (`graph.facebook.com`) disponíveis. Se não tiverem, ajustar o ambiente.
+- Reels do Cobrança iPad: gravar com dados fictícios, numa instância de demonstração ou rodando localmente com um Supabase de teste. Nunca usar a conta com clientes reais.
 - Fazer um teste ponta a ponta numa conta real antes de ligar o calendário. O primeiro post será confirmado pelo dono.
