@@ -1,6 +1,6 @@
 # O que a ARMAG vende — ficha de fatos
 
-> **Status: AGUARDANDO APROVAÇÃO DO DONO**
+> **Status: APROVADO PELO DONO em 12/11/2026**
 > Esta é a fonte de verdade dos posts: nenhum post afirma algo que não esteja aqui.
 > Sem números de resultado, sem depoimentos e sem clientes citados por nome, a menos que o dono acrescente.
 
