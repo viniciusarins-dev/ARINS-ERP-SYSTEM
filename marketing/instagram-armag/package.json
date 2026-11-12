@@ -1,0 +1,5 @@
+{
+  "name": "instagram-armag",
+  "private": true,
+  "scripts": { "test": "node --test test/*.test.cjs" }
+}
