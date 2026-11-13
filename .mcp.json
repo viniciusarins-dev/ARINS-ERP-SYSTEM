@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "armag": {
+      "command": "node",
+      "args": ["packages/armag-mcp/dist/server.mjs"],
+      "env": { "NODE_USE_ENV_PROXY": "1", "NODE_NO_WARNINGS": "1" }
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "@armag/mcp",
+  "private": true,
+  "type": "module",
+  "description": "Servidor MCP da ARMAG: ferramentas de prospecção que chamam o serviço bob (Supabase Edge Function).",
+  "scripts": {
+    "test": "node --test test/*.test.ts",
+    "build": "esbuild src/server.ts --bundle --platform=node --format=esm --target=node20 --outfile=dist/server.mjs --log-level=warning"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.32.2",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "esbuild": "0.24.2"
+  }
+}
