@@ -70,8 +70,24 @@ describe("prospecção", () => {
   it("preenche a mensagem de apresentação", () => {
     const msg = renderProspectMessage(DEFAULT_PROSPECT_MESSAGE, { empresa: "Barbearia do Zé", cidade: "Joinville", meu_nome: "Vinicius" });
     expect(msg).toContain("Falo com o responsável pela Barbearia do Zé?");
-    expect(msg).toContain("Meu nome é Vinicius, trabalho com criação de sites e sistemas aqui em Joinville.");
+    expect(msg).toContain("Sou Vinicius, da ARMAG. Criamos sites e sistemas para negócios de Joinville e região.");
     expect(renderProspectMessage("Oi {empresa} de {cidade}", { empresa: "X" })).toBe("Oi X de sua cidade");
+  });
+
+  it("mensagem padrão segue a ficha aprovada e oferece saída", () => {
+    expect(DEFAULT_PROSPECT_MESSAGE).toContain("{meu_nome}");
+    expect(DEFAULT_PROSPECT_MESSAGE).toContain("ARMAG");
+    expect(DEFAULT_PROSPECT_MESSAGE).toContain("agenda sozinho, 24 horas");
+    expect(DEFAULT_PROSPECT_MESSAGE).toContain("Se não tiver interesse, é só me avisar");
+    expect(DEFAULT_PROSPECT_MESSAGE).not.toContain("fotos dos cortes");
+  });
+
+  it("preenche {bairro} e {segmento}; sem bairro usa a cidade", () => {
+    const t = "{empresa} em {bairro} ({segmento})";
+    expect(renderProspectMessage(t, { empresa: "X", cidade: "Joinville", bairro: "Saguaçu", segmento: "salao" })).toBe("X em Saguaçu (salão)");
+    expect(renderProspectMessage(t, { empresa: "X", cidade: "Joinville", segmento: "barbearia" })).toBe("X em Joinville (barbearia)");
+    expect(renderProspectMessage(DEFAULT_PROSPECT_MESSAGE, { empresa: "Barbearia do Zé", cidade: "Joinville", bairro: "Centro", meu_nome: "Vinicius" }))
+      .toContain("Vi que a Barbearia do Zé, aqui em Centro, ainda não tem site próprio.");
   });
 
   it("lê o resultado do Nominatim", () => {

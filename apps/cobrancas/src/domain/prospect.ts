@@ -149,19 +149,24 @@ export function instagramLink(handle: string): string {
 
 export const DEFAULT_PROSPECT_MESSAGE = [
   "Olá, tudo bem? Falo com o responsável pela {empresa}?",
-  "Meu nome é {meu_nome}, trabalho com criação de sites e sistemas aqui em {cidade}.",
-  "Vi que a {empresa} ainda não tem um site próprio e preparei uma ideia: um site com agendamento online, fotos dos cortes, valores e botão direto para o WhatsApp — para os clientes acharem a barbearia no Google e agendarem sem precisar ligar.",
-  "Posso te mostrar alguns trabalhos que já fiz? Sem compromisso!",
+  "Sou {meu_nome}, da ARMAG. Criamos sites e sistemas para negócios de {cidade} e região.",
+  "Vi que a {empresa}, aqui em {bairro}, ainda não tem site próprio. Fizemos para uma barbearia um site em que o cliente agenda sozinho, 24 horas: escolhe o serviço, o profissional e o horário livre. Te mando um vídeo de 23 segundos mostrando.",
+  "Se fizer sentido, te passo um orçamento sem compromisso. Se não tiver interesse, é só me avisar que não mando mais mensagens.",
 ].join("\n\n");
 
-/** Preenche {empresa}, {cidade} e {meu_nome} na mensagem de apresentação. */
+const SEGMENTO_FALADO: Record<string, string> = { barbearia: "barbearia", salao: "salão", outro: "negócio" };
+
+/** Preenche {empresa}, {cidade}, {meu_nome}, {bairro} (sem bairro → cidade) e {segmento}. */
 export function renderProspectMessage(
   template: string,
-  vars: { empresa: string; cidade?: string | null; meu_nome?: string | null },
+  vars: { empresa: string; cidade?: string | null; meu_nome?: string | null; bairro?: string | null; segmento?: string | null },
 ): string {
+  const cidade = vars.cidade?.trim() || "sua cidade";
   return template
     .replace(/\{empresa\}/g, vars.empresa.trim())
-    .replace(/\{cidade\}/g, vars.cidade?.trim() || "sua cidade")
+    .replace(/\{cidade\}/g, cidade)
+    .replace(/\{bairro\}/g, vars.bairro?.trim() || cidade)
+    .replace(/\{segmento\}/g, SEGMENTO_FALADO[vars.segmento ?? ""] ?? "negócio")
     .replace(/\{meu_nome\}/g, vars.meu_nome?.trim() || "")
     .replace(/[ \t]+([,.!?])/g, "$1")
     .replace(/ {2,}/g, " ")
