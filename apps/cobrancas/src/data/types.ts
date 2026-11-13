@@ -71,7 +71,7 @@ export type Lead = {
   city: string | null;
   lat: number | null;
   lon: number | null;
-  source: "osm" | "manual";
+  source: "osm" | "manual" | "google";
   sourceRef: string | null;
   status: LeadStatus;
   notes: string | null;
