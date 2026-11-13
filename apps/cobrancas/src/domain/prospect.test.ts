@@ -97,3 +97,18 @@ describe("prospecção", () => {
     expect(parseNominatim({ erro: true })).toEqual([]);
   });
 });
+
+describe("leads de hoje e bairro", () => {
+  it("leadsDeHoje usa a data de São Paulo e mantém os mais novos primeiro", async () => {
+    const { leadsDeHoje } = await import("./prospect");
+    const l = (id: string, createdAt: string) => ({ id, createdAt });
+    const r = leadsDeHoje([l("a", "2026-11-13T02:59:00Z"), l("b", "2026-11-13T03:00:00Z"), l("c", "2026-11-14T02:00:00Z"), l("d", "2026-11-13T18:00:00Z")], "2026-11-13");
+    expect(r.map((x) => x.id)).toEqual(["c", "d", "b"]);
+  });
+  it("bairroDoEndereco", async () => {
+    const { bairroDoEndereco } = await import("./prospect");
+    expect(bairroDoEndereco("Rua A, 10 - Saguaçu, Joinville - SC, 89221-000, Brasil")).toBe("Saguaçu");
+    expect(bairroDoEndereco("Rua A - Centro")).toBeNull();
+    expect(bairroDoEndereco(null)).toBeNull();
+  });
+});

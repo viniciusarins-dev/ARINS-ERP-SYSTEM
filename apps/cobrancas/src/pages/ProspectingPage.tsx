@@ -2,6 +2,7 @@ import {
   AtSign,
   Building2,
   ExternalLink,
+  Film,
   Globe,
   Loader2,
   MapPin,
@@ -28,6 +29,7 @@ import { Field, Input, inputBase } from "@/components/ui/Field";
 import { Panel } from "@/components/ui/Panel";
 import { useToast } from "@/components/ui/Toaster";
 import { useData } from "@/data/DataProvider";
+import { PROSPECT_VIDEO_URL } from "@/config/prospeccao";
 import { RepoError, type Lead, type LeadInput } from "@/data/types";
 import { formatPhone, maskPhoneInput, validatePhone, whatsappLink } from "@/domain/phone";
 import {
@@ -38,6 +40,8 @@ import {
   LEAD_STATUSES,
   leadStatusLabel,
   renderProspectMessage,
+  bairroDoEndereco,
+  leadsDeHoje,
   SEARCH_RADIUS,
   type GeoPlace,
   type LeadStatus,
@@ -394,8 +398,10 @@ function CandidateRow({ c, saved, saving, onSave }: { c: ProspectCandidate; save
 /* ------------------------------------------------------------------ */
 
 function LeadsTab({ onSearch }: { onSearch: () => void }) {
-  const { leads } = useData();
-  const [filter, setFilter] = useState<LeadStatus | "todos">("todos");
+  const { leads, today } = useData();
+  const [params] = useSearchParams();
+  const [filter, setFilter] = useState<LeadStatus | "todos" | "hoje">(params.get("hoje") === "1" ? "hoje" : "todos");
+  const deHoje = useMemo(() => leadsDeHoje(leads, today), [leads, today]);
   const [query, setQuery] = useState("");
 
   const counts = useMemo(() => {
@@ -405,8 +411,9 @@ function LeadsTab({ onSearch }: { onSearch: () => void }) {
   }, [leads]);
 
   const q = query.trim().toLowerCase();
-  const visible = leads.filter(
-    (l) => (filter === "todos" || l.status === filter) && (!q || l.name.toLowerCase().includes(q) || (l.city ?? "").toLowerCase().includes(q)),
+  const base = filter === "hoje" ? deHoje : leads;
+  const visible = base.filter(
+    (l) => (filter === "todos" || filter === "hoje" || l.status === filter) && (!q || l.name.toLowerCase().includes(q) || (l.city ?? "").toLowerCase().includes(q)),
   );
 
   if (leads.length === 0) {
@@ -434,6 +441,9 @@ function LeadsTab({ onSearch }: { onSearch: () => void }) {
           <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Buscar por nome ou cidade" className="pl-10" aria-label="Buscar lead" />
         </div>
         <div className="-mx-4 flex gap-1.5 overflow-x-auto px-4 pb-1 lg:mx-0 lg:px-0 lg:pb-0">
+          <Chip active={filter === "hoje"} onClick={() => setFilter("hoje")}>
+            Hoje {deHoje.length}
+          </Chip>
           <Chip active={filter === "todos"} onClick={() => setFilter("todos")}>
             Todos {leads.length}
           </Chip>
@@ -444,8 +454,19 @@ function LeadsTab({ onSearch }: { onSearch: () => void }) {
           ))}
         </div>
       </div>
+      {filter === "hoje" && deHoje.length > 0 && (
+        <div className="border-b border-white/[0.06] bg-gold/[0.06] px-4 py-3 text-sm md:px-5">
+          <b className="font-semibold text-gold-200">Leads de hoje: {deHoje.length}.</b>{" "}
+          <span className="text-mist">Toque em WhatsApp para abrir a mensagem pronta e anexe o vídeo nas barbearias e salões.</span>
+        </div>
+      )}
       {visible.length === 0 ? (
-        <EmptyState icon={<Search />} title="Nada encontrado" description="Nenhum lead com esse filtro." className="py-8" />
+        <EmptyState
+          icon={<Search />}
+          title="Nada encontrado"
+          description={filter === "hoje" ? "Nenhum lead criado hoje. Fale \"Olá, Bob\" no iPhone ou busque empresas." : "Nenhum lead com esse filtro."}
+          className="py-8"
+        />
       ) : (
         <ul>
           {visible.map((l) => (
@@ -470,6 +491,8 @@ function LeadRow({ lead }: { lead: Lead }) {
     const text = renderProspectMessage(settings.prospectMessage ?? DEFAULT_PROSPECT_MESSAGE, {
       empresa: lead.name,
       cidade: lead.city,
+      bairro: bairroDoEndereco(lead.address),
+      segmento: lead.segment,
       meu_nome: settings.myName ?? displayName,
     });
     window.open(whatsappLink(lead.phone, text), "_blank", "noopener,noreferrer");
@@ -512,6 +535,11 @@ function LeadRow({ lead }: { lead: Lead }) {
         <Button variant="dark" size="sm" icon={<MessageCircle />} disabled={!phoneOk} title={phoneOk ? undefined : "Sem WhatsApp válido"} onClick={() => void contact()}>
           WhatsApp
         </Button>
+        {(lead.segment === "barbearia" || lead.segment === "salao") && (
+          <a href={PROSPECT_VIDEO_URL} target="_blank" rel="noreferrer" download className={buttonClass("ghost", "sm")} title="Vídeo de 23 s para anexar na mensagem">
+            <Film /> Vídeo
+          </a>
+        )}
         {lead.instagram && (
           <a href={instagramLink(lead.instagram)} target="_blank" rel="noreferrer" aria-label="Instagram" className={buttonClass("ghost", "sm")}>
             <AtSign />

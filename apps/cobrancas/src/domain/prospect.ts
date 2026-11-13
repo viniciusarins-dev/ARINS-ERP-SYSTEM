@@ -199,3 +199,18 @@ export function parseNominatim(json: unknown): GeoPlace[] {
     }))
     .filter((p) => p.label && Number.isFinite(p.lat) && Number.isFinite(p.lon));
 }
+
+/** "Rua A, 10 - Saguaçu, Joinville - SC, 89221-000, Brasil" → "Saguaçu" (formato do Google). */
+export function bairroDoEndereco(address: string | null | undefined): string | null {
+  if (!address) return null;
+  const partes = address.split(",").map((p) => p.trim());
+  const i = partes.findIndex((p) => / - [A-Z]{2}$/.test(p));
+  const anterior = i > 0 ? partes[i - 1] : "";
+  return anterior.includes(" - ") ? anterior.split(" - ").pop()!.trim() || null : null;
+}
+
+/** Leads criados hoje (data de São Paulo, UTC−3), mais novos primeiro. */
+export function leadsDeHoje<T extends { createdAt: string }>(leads: T[], hoje: string): T[] {
+  const dataSP = (iso: string) => new Date(new Date(iso).getTime() - 3 * 3600_000).toISOString().slice(0, 10);
+  return leads.filter((l) => dataSP(l.createdAt) === hoje).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+}

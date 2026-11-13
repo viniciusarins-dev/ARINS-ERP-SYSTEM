@@ -5,7 +5,7 @@
  */
 import { consultaPlaces, parsePlaces, PLACES_FIELD_MASK, selecionar, type PlaceCandidate, type PlaceSegment } from "../../../src/domain/places";
 import { fraseErro, fraseResultado, interpretarPedido, MAX_QUANTIDADE, PADRAO_QUANTIDADE } from "../../../src/domain/pedido";
-import { DEFAULT_PROSPECT_MESSAGE, LEAD_STATUSES, renderProspectMessage, type LeadStatus } from "../../../src/domain/prospect";
+import { bairroDoEndereco, DEFAULT_PROSPECT_MESSAGE, LEAD_STATUSES, renderProspectMessage, type LeadStatus } from "../../../src/domain/prospect";
 import { normalizePhone, whatsappLink } from "../../../src/domain/phone";
 
 export type Env = {
@@ -121,14 +121,6 @@ async function salvar(deps: Deps, cands: PlaceCandidate[]) {
 
 const quantidade = (q: unknown) => Math.min(MAX_QUANTIDADE, Math.max(1, Number.isFinite(Number(q)) && q !== undefined ? Math.trunc(Number(q)) : PADRAO_QUANTIDADE));
 const segmentosDe = (s: unknown): PlaceSegment[] => (s === "barbearia" || s === "salao" ? [s] : SEGMENTOS);
-
-function bairroDoEndereco(address: string | null): string | null {
-  if (!address) return null;
-  const partes = address.split(",").map((p) => p.trim());
-  const i = partes.findIndex((p) => / - [A-Z]{2}$/.test(p));
-  const anterior = i > 0 ? partes[i - 1] : "";
-  return anterior.includes(" - ") ? anterior.split(" - ").pop()!.trim() : null;
-}
 
 function candidatoValido(c: unknown): c is PlaceCandidate {
   const x = c as PlaceCandidate;
