@@ -1,4 +1,4 @@
-# MCP de prospecção da ARMAG — design
+# Prospecção da ARMAG: serviço, MCP e o assistente de voz "Bob" — design
 
 ## Intenção
 O dono quer que o Claude **puxe cerca de 5 potenciais leads por dia** (negócios de Joinville e região sem site próprio) e já deixe **uma mensagem de abordagem pronta**. Nas barbearias e salões, a mensagem vai com o **vídeo de 23 s** (`clube-da-navalha-curta.mp4`). O dono envia com um toque e o acompanhamento fica no painel ARMAG Cobranças (tela Prospecção, tabela `armag.leads`).
@@ -102,3 +102,52 @@ O dono quer que o Claude **puxe cerca de 5 potenciais leads por dia** (negócios
   - remoção de duplicados por id e por telefone;
   - montagem da mensagem e do link `wa.me` (acentos codificados);
   - contador de cota.
+
+## Atualização (aprovada): o "Bob" e o serviço de prospecção
+O dono quer um assistente de voz no iPhone (iPhone 16, iOS 26.5.2): **"Olá, Bob"** → "Quantos leads você quer hoje?" → o Bob cria os leads.
+
+Por isso, a lógica sai do MCP e vira um **serviço único na internet**: a Edge Function `bob` no projeto Arins-ERP. Quem chama esse serviço:
+- **Atalho do iPhone**, disparado pelo Atalho Vocal "Olá, Bob", sem precisar dizer "E aí, Siri";
+- **MCP `armag`** no Claude Code (lista diária às 8h40 e uso em conversa): as ferramentas viram chamadas HTTP ao serviço;
+- **Painel**: a tela Prospecção ganha o filtro **"Hoje"**, o botão de baixar o vídeo e a mensagem personalizada.
+
+### Serviço `bob` (Supabase Edge Function, Deno)
+- **Rotas:** `POST /bob`, recebendo `{ acao, ... }`:
+  - `pedido { texto }`: interpreta a frase falada e executa buscar → salvar. Devolve `{ falar, criados, url }`;
+  - `buscar`, `salvar`, `mensagem`, `marcar_status` e `listar`: o mesmo que as ferramentas do MCP.
+- **Interpretação da frase, sem IA:**
+  - quantidade em número ou por extenso (um a dez; acima de 10, limita a 10; sem número, assume 5);
+  - segmento: barbearia ou salão; padrão os dois;
+  - bairro ou cidade: texto depois de "no", "na" ou "em"; padrão "Joinville SC".
+- **Resposta falada:**
+  - "Pronto! Criei N leads de <segmento> sem site e deixei as mensagens prontas.";
+  - se achar menos: "Só achei N hoje em <região>.";
+  - se achar zero: explica e sugere outra região.
+- **Segredos, todos dentro do Supabase, como segredos da função:**
+  - `SUPABASE_SERVICE_ROLE_KEY` (já injetada pelo Supabase);
+  - `GOOGLE_PLACES_KEY` (o dono cola no painel do Supabase);
+  - `BOB_TOKEN` (gerado; o Atalho e o MCP enviam no cabeçalho `X-Bob-Token`).
+- **Configuração da função:**
+  - `verify_jwt = false`; o próprio serviço exige o `X-Bob-Token`;
+  - com a chave de serviço, o código só escreve em `armag.leads` e lê `armag.clients` e `armag.settings`.
+- **Contador de buscas do mês** numa tabela `armag.prospect_usage`, com aviso a partir de 300.
+
+### Atalho do iPhone (o dono monta com o passo a passo)
+Não é possível gerar um Atalho assinado fora de um Mac.
+
+1. Falar o texto "Fala, Vinicius! Quantos leads você quer hoje?"
+2. Ditar texto.
+3. Obter conteúdo do URL: `POST https://gxrvtdlcdqpirojyibbm.supabase.co/functions/v1/bob`, com o cabeçalho `X-Bob-Token` e o JSON `{acao:"pedido", texto}`.
+4. Falar o campo `falar` da resposta.
+5. Abrir o URL do campo `url` (painel → Prospecção → Hoje).
+
+Depois: Ajustes → Acessibilidade → **Atalhos Vocais**, gravar "Olá, Bob" e escolher o Atalho Bob.
+
+### Painel
+- O filtro **"Hoje"** (`/prospeccao?hoje=1`) mostra os leads criados hoje.
+- Cada lead tem a mensagem com `{bairro}` e `{segmento}`. O botão WhatsApp já existe e marca o lead como contatado.
+- O botão **"Baixar vídeo"** aponta para o vídeo de 23 s no bucket público `instagram-armag`.
+
+### Decisões que este desenho resolve
+- **Acesso ao banco:** chave de serviço só dentro da função, com o código restrito. O Claude e o celular nunca a veem.
+- **Chave do Google:** segredo da função, não credencial do proxy.
